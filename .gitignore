@@ -1,0 +1,32 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+
+# Godot imported resources / caches
+.import/
+
+# Mono / C# build artifacts
+.mono/
+
+# Exported builds
+build/
+builds/
+export/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+*~
