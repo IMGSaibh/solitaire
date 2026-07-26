@@ -7,6 +7,10 @@ signal pile_clicked(pile_view: PileView)
 
 var pile: CardPile
 
+signal card_clicked(
+	pile_view: PileView,
+	card_index: int
+)
 
 func setup(pile_data: CardPile) -> void:
 	pile = pile_data
@@ -26,6 +30,9 @@ func refresh() -> void:
 		add_child(card_view)
 
 		card_view.setup(card)
+		card_view.card_clicked.connect(
+			_on_card_clicked.bind(i)
+		)
 
 		_position_card(card_view, i)
 
@@ -43,6 +50,12 @@ func _position_card(card_view: CardView, index: int) -> void:
 
 		_:
 			card_view.position = Vector2.ZERO
+
+func _on_card_clicked(
+	_card_view: CardView,
+	card_index: int
+) -> void:
+	card_clicked.emit(self, card_index)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

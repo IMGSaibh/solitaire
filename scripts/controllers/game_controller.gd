@@ -4,7 +4,10 @@ var game_state: GameState
 
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
-var selected_waste_card: CardData = null
+# var selected_waste_card: CardData = null
+var selected_cards: Array[CardData] = []
+var selected_source_pile: CardPile = null
+
 @onready var foundation_views: Array[PileView] = [
 	$Board/Foundation1,
 	$Board/Foundation2,
@@ -31,6 +34,10 @@ func _ready() -> void:
 	
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_clicked.bind(i))
+
+		tableau_views[i].card_clicked.connect(
+		_on_tableau_card_clicked.bind(i)
+		)	
 
 	refresh_board()
 
@@ -96,39 +103,86 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 	if game_state.waste.is_empty():
 		return
 
-	selected_waste_card = game_state.waste.get_top_card()
+	selected_cards = [
+		game_state.waste.get_top_card()
+	]
 
-	print(
-		"Ausgewählt: ",
-		selected_waste_card.get_suit_name(),
-		" ",
-		selected_waste_card.get_rank_name()
-	)
+	selected_source_pile = game_state.waste
+
 
 func _on_tableau_clicked(
 	_pile_view: PileView,
 	tableau_index: int
 ) -> void:
 
-	if selected_waste_card == null:
+	if selected_cards.is_empty():
 		return
+
 
 	var target_pile := game_state.tableau[tableau_index]
 
-	if not KlondikeRules.can_move_to_tableau(
-		selected_waste_card,
+	if target_pile == selected_source_pile:
+		clear_selection()
+		return
+
+	if not KlondikeRules.can_move_sequence_to_tableau(
+		selected_cards,
 		target_pile
 	):
 		print("Zug nicht erlaubt")
 		return
 
-	move_waste_to_tableau(target_pile)
+	move_selected_cards(target_pile)
 
-func move_waste_to_tableau(target_pile: CardPile) -> void:
-	if game_state.waste.is_empty():
+func _on_tableau_card_clicked(
+	_pile_view: PileView,
+	card_index: int,
+	tableau_index: int
+) -> void:
+
+	var pile := game_state.tableau[tableau_index]
+
+	if not KlondikeRules.can_pick_up_tableau_sequence(
+		pile,
+		card_index
+	):
+		print("Diese Kartenfolge darf nicht aufgenommen werden")
 		return
 
-	var card := game_state.waste.remove_top_card()
-	target_pile.add_card(card)
-	selected_waste_card = null
+	selected_cards.clear()
+
+	for i in range(card_index, pile.cards.size()):
+		selected_cards.append(pile.cards[i])
+
+	selected_source_pile = pile
+
+	print("Ausgewählt: ", selected_cards.size(), " Karten")
+
+func move_selected_cards(target_pile: CardPile) -> void:
+	if selected_source_pile == null:
+		return
+
+	for card in selected_cards:
+		selected_source_pile.cards.erase(card)
+		target_pile.add_card(card)
+
+	_flip_new_top_card(selected_source_pile)
+
+	clear_selection()
 	refresh_board()
+
+func clear_selection() -> void:
+	selected_cards.clear()
+	selected_source_pile = null
+
+func _flip_new_top_card(pile: CardPile) -> void:
+	if pile.type != CardPile.Type.TABLEAU:
+		return
+
+	if pile.is_empty():
+		return
+
+	var top_card := pile.get_top_card()
+
+	if not top_card.face_up:
+		top_card.face_up = true
