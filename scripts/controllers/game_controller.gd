@@ -38,6 +38,7 @@ func _ready() -> void:
 	
 	for i in range(foundation_views.size()):
 		foundation_views[i].pile_clicked.connect(_on_foundation_clicked.bind(i))
+		foundation_views[i].card_clicked.connect(_on_foundation_card_clicked.bind(i))
 
 	refresh_board()
 
@@ -205,17 +206,25 @@ func _flip_new_top_card(pile: CardPile) -> void:
 	if not top_card.face_up:
 		top_card.face_up = true
 
-func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void:
+func _on_foundation_clicked(
+	_pile_view: PileView,
+	foundation_index: int
+) -> void:
 
 	if selected_cards.is_empty():
 		return
 
-	# Auf Foundation darf nur eine einzelne Karte.
+	var target_pile := game_state.foundations[foundation_index]
+
+	# Nicht auf den eigenen Stapel legen
+	if target_pile == selected_source_pile:
+		clear_selection()
+		return
+
 	if selected_cards.size() != 1:
 		print("Nur einzelne Karten dürfen auf die Foundation")
 		return
 
-	var target_pile := game_state.foundations[foundation_index]
 	var card := selected_cards[0]
 
 	if not KlondikeRules.can_move_to_foundation(
@@ -290,3 +299,32 @@ func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
 			clear_selection()
 			refresh_board()
 			return
+
+func _on_foundation_card_clicked(
+	_pile_view: PileView,
+	card_index: int,
+	foundation_index: int
+) -> void:
+
+	var pile := game_state.foundations[foundation_index]
+
+	if pile.is_empty():
+		return
+
+	if card_index != pile.cards.size() - 1:
+		return
+
+	# Es ist noch nichts ausgewählt:
+	# Foundation-Karte wird zur Quelle.
+	if selected_cards.is_empty():
+		selected_cards.clear()
+		selected_cards.append(pile.get_top_card())
+		selected_source_pile = pile
+
+		print(
+			"Foundation-Karte ausgewählt: ",
+			selected_cards[0].get_suit_name(),
+			" ",
+			selected_cards[0].get_rank_name()
+		)
+		return

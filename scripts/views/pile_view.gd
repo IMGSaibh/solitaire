@@ -49,7 +49,8 @@ func _position_card(card_view: CardView, index: int) -> void:
 			card_view.position = Vector2.ZERO
 
 func _on_card_clicked(_card_view: CardView, card_index: int) -> void:
-	if pile.type == CardPile.Type.TABLEAU:
+	if pile.type == CardPile.Type.TABLEAU \
+	or pile.type == CardPile.Type.FOUNDATION:
 		card_clicked.emit(self, card_index)
 	else:
 		pile_clicked.emit(self)
