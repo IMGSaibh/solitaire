@@ -24,11 +24,12 @@ var game_state: GameState
 
 func _ready() -> void:
 	print("Solitaire gestartet!")
-
 	game_state = GameState.new()
 	game_state.new_game()
+	stock_view.pile_clicked.connect(_on_stock_clicked)
+
 	refresh_board()
-	
+
 	print("Stock: ", game_state.stock.size())
 
 	for i in range(game_state.tableau.size()):
@@ -56,3 +57,19 @@ func refresh_board() -> void:
 		tableau_views[i].setup(
 			game_state.tableau[i]
 		)
+
+func _on_stock_clicked(_pile_view: PileView) -> void:
+	draw_card_from_stock()
+
+func draw_card_from_stock() -> void:
+	if game_state.stock.is_empty():
+		return
+
+	var card := game_state.stock.remove_top_card()
+
+	card.face_up = true
+
+	game_state.waste.add_card(card)
+
+	stock_view.refresh()
+	waste_view.refresh()

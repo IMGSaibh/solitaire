@@ -6,6 +6,7 @@
 [node name="CardView" type="Control" unique_id=1117074281]
 layout_mode = 3
 anchors_preset = 0
+mouse_filter = 2
 script = ExtResource("1_rfc1g")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1220745914]
@@ -17,6 +18,7 @@ offset_right = 100.0
 offset_bottom = 140.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("2_d56wy")
 expand_mode = 1
 stretch_mode = 6

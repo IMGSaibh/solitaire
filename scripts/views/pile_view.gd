@@ -1,6 +1,8 @@
 class_name PileView
 extends Control
 
+signal pile_clicked(pile_view: PileView)
+
 @export var card_scene: PackedScene
 
 var pile: CardPile
@@ -41,3 +43,8 @@ func _position_card(card_view: CardView, index: int) -> void:
 
 		_:
 			card_view.position = Vector2.ZERO
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			pile_clicked.emit(self)
