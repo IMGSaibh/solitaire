@@ -1,13 +1,11 @@
 extends Control
 
 var game_state: GameState
-
-@onready var stock_view: PileView = $Board/Stock
-@onready var waste_view: PileView = $Board/Waste
-# var selected_waste_card: CardData = null
 var selected_cards: Array[CardData] = []
 var selected_source_pile: CardPile = null
 
+@onready var stock_view: PileView = $Board/Stock
+@onready var waste_view: PileView = $Board/Waste
 @onready var foundation_views: Array[PileView] = [
 	$Board/Foundation1,
 	$Board/Foundation2,
@@ -31,10 +29,15 @@ func _ready() -> void:
 	game_state.new_game()
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
+	waste_view.card_double_clicked.connect(_on_waste_card_double_clicked)
 	
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_clicked.bind(i))
 		tableau_views[i].card_clicked.connect(_on_tableau_card_clicked.bind(i))
+		tableau_views[i].card_double_clicked.connect(_on_tableau_card_double_clicked.bind(i))
+	
+	for i in range(foundation_views.size()):
+		foundation_views[i].pile_clicked.connect(_on_foundation_clicked.bind(i))
 
 	refresh_board()
 
@@ -97,7 +100,6 @@ func recycle_waste_to_stock() -> void:
 	stock_view.refresh()
 	waste_view.refresh()
 
-
 func _on_waste_clicked(_pile_view: PileView) -> void:
 	if game_state.waste.is_empty():
 		return
@@ -116,11 +118,7 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 		selected_cards[0].get_rank_name()
 	)
 
-
-func _on_tableau_clicked(
-	_pile_view: PileView,
-	tableau_index: int
-) -> void:
+func _on_tableau_clicked(_pile_view: PileView, tableau_index: int) -> void:
 
 	if selected_cards.is_empty():
 		return
@@ -141,11 +139,7 @@ func _on_tableau_clicked(
 
 	move_selected_cards(target_pile)
 
-func _on_tableau_card_clicked(
-	_pile_view: PileView,
-	card_index: int,
-	tableau_index: int
-) -> void:
+func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
 
 	var pile := game_state.tableau[tableau_index]
 
@@ -210,3 +204,89 @@ func _flip_new_top_card(pile: CardPile) -> void:
 
 	if not top_card.face_up:
 		top_card.face_up = true
+
+func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void:
+
+	if selected_cards.is_empty():
+		return
+
+	# Auf Foundation darf nur eine einzelne Karte.
+	if selected_cards.size() != 1:
+		print("Nur einzelne Karten dürfen auf die Foundation")
+		return
+
+	var target_pile := game_state.foundations[foundation_index]
+	var card := selected_cards[0]
+
+	if not KlondikeRules.can_move_to_foundation(
+		card,
+		target_pile
+	):
+		print("Foundation-Zug nicht erlaubt")
+		return
+
+	move_selected_card_to_foundation(target_pile)
+
+func move_selected_card_to_foundation(target_pile: CardPile) -> void:
+	if selected_source_pile == null:
+		return
+
+	if selected_cards.size() != 1:
+		return
+
+	var card := selected_cards[0]
+
+	selected_source_pile.cards.erase(card)
+	target_pile.add_card(card)
+
+	_flip_new_top_card(selected_source_pile)
+
+	clear_selection()
+	refresh_board()
+
+func _on_waste_card_double_clicked(_pile_view: PileView, card_index: int) -> void:
+	if game_state.waste.is_empty():
+		return
+
+	# Nur die oberste Waste-Karte darf bewegt werden.
+	if card_index != game_state.waste.cards.size() - 1:
+		return
+
+	var card := game_state.waste.get_top_card()
+
+	auto_move_to_foundation(
+		card,
+		game_state.waste
+	)
+
+func _on_tableau_card_double_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
+	var pile := game_state.tableau[tableau_index]
+
+	if pile.is_empty():
+		return
+
+	if card_index != pile.cards.size() - 1:
+		return
+
+	var card := pile.get_top_card()
+
+	if not card.face_up:
+		return
+
+	auto_move_to_foundation(
+		card,
+		pile
+	)
+
+func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
+
+	for foundation in game_state.foundations:
+		if KlondikeRules.can_move_to_foundation(card, foundation):
+			source_pile.cards.erase(card)
+			foundation.add_card(card)
+
+			_flip_new_top_card(source_pile)
+
+			clear_selection()
+			refresh_board()
+			return

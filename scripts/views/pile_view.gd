@@ -8,6 +8,7 @@ var pile: CardPile
 
 signal card_clicked(pile_view: PileView, card_index: int)
 signal pile_clicked(pile_view: PileView)
+signal card_double_clicked(pile_view: PileView, card_index: int)
 
 func setup(pile_data: CardPile) -> void:
 	pile = pile_data
@@ -28,6 +29,7 @@ func refresh() -> void:
 
 		card_view.setup(card)
 		card_view.card_clicked.connect(_on_card_clicked.bind(i))
+		card_view.card_double_clicked.connect(_on_card_double_clicked.bind(i))
 
 		_position_card(card_view, i)
 
@@ -51,6 +53,9 @@ func _on_card_clicked(_card_view: CardView, card_index: int) -> void:
 		card_clicked.emit(self, card_index)
 	else:
 		pile_clicked.emit(self)
+
+func _on_card_double_clicked(_card_view: CardView, card_index: int) -> void:
+	card_double_clicked.emit(self, card_index)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

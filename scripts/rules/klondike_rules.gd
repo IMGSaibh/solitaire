@@ -54,3 +54,21 @@ static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: Ca
 	var first_card := cards[0]
 
 	return can_move_to_tableau(first_card, target_pile)
+
+static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> bool:
+	if card == null:
+		return false
+
+	if target_pile.type != CardPile.Type.FOUNDATION:
+		return false
+
+	# Leere Foundation startet immer mit Ass
+	if target_pile.is_empty():
+		return card.rank == 1
+
+	var top_card := target_pile.get_top_card()
+
+	var same_suit := card.suit == top_card.suit
+	var next_rank := card.rank == top_card.rank + 1
+
+	return same_suit and next_rank

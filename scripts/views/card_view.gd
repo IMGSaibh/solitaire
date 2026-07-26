@@ -5,6 +5,7 @@ extends Control
 
 var card: CardData
 signal card_clicked(card_view: CardView)
+signal card_double_clicked(card_view: CardView)
 
 func setup(card_data: CardData) -> void:
 	card = card_data
@@ -51,4 +52,7 @@ func get_suit_name(suit: CardData.Suit) -> String:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			card_clicked.emit(self)
+			if event.double_click:
+				card_double_clicked.emit(self)
+			else:
+				card_clicked.emit(self)

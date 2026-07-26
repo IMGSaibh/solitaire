@@ -11,7 +11,6 @@ var tableau: Array[CardPile] = []
 func _init() -> void:
 	_create_piles()
 
-
 func _create_piles() -> void:
 	stock = CardPile.new(CardPile.Type.STOCK)
 	waste = CardPile.new(CardPile.Type.WASTE)
