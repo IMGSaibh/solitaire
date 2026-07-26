@@ -1,16 +1,13 @@
 class_name PileView
 extends Control
 
-signal pile_clicked(pile_view: PileView)
 
 @export var card_scene: PackedScene
 
 var pile: CardPile
 
-signal card_clicked(
-	pile_view: PileView,
-	card_index: int
-)
+signal card_clicked(pile_view: PileView, card_index: int)
+signal pile_clicked(pile_view: PileView)
 
 func setup(pile_data: CardPile) -> void:
 	pile = pile_data
