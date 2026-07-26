@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="solitaire"
+run/main_scene="uid://cuxyxq70dg81t"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
 [physics]

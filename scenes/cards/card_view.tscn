@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dpmravhpclsd8"]
+
+[ext_resource type="Script" uid="uid://le3riownw630" path="res://scripts/views/card_view.gd" id="1_rfc1g"]
+[ext_resource type="Texture2D" uid="uid://bj5grfvmjf6oj" path="res://assets/cards/faces/clubs_01.png" id="2_d56wy"]
+
+[node name="CardView" type="Control" unique_id=1117074281]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_rfc1g")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1220745914]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 100.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_d56wy")
+expand_mode = 1
+stretch_mode = 5

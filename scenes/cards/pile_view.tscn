@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://qsmsyhxi86cu"]
+
+[node name="PileView" type="Control" unique_id=865190981]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 100.0
+offset_bottom = 140.0
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1987914899]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.1254902)
