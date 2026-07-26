@@ -1,14 +1,48 @@
+class_name CardView
 extends Control
 
 @onready var texture_rect: TextureRect = $TextureRect
 
-var suit: String
-var rank: int
-var face_up := true
+var card: CardData
 
-func set_card(card_suit: String, card_rank: int) -> void:
-    suit = card_suit
-    rank = card_rank
+func setup(card_data: CardData) -> void:
+	card = card_data
+	update_visual()
 
-    var path := "res://assets/cards/faces/%s_%02d.png" % [suit, rank]
-    texture_rect.texture = load(path)
+func update_visual() -> void:
+	if card == null:
+		return
+
+	var texture_path : String
+	if card.face_up:
+		texture_path = get_texture_path(card)
+	else:
+		texture_path = "res://assets/cards/back.png"
+	var texture := load(texture_path) as Texture2D
+
+	if texture == null:
+		push_error("card texture could not be loaded: " + texture_path)
+		return
+
+	texture_rect.texture = texture
+
+func get_texture_path(card_data: CardData) -> String:
+	var suit_name := get_suit_name(card_data.suit)
+
+	return "res://assets/cards/faces/%s_%02d.png" % [
+		suit_name,
+		card_data.rank
+	]
+
+func get_suit_name(suit: CardData.Suit) -> String:
+	match suit:
+		CardData.Suit.CLUBS:
+			return "clubs"
+		CardData.Suit.DIAMONDS:
+			return "diamonds"
+		CardData.Suit.HEARTS:
+			return "hearts"
+		CardData.Suit.SPADES:
+			return "spades"
+		_:
+			return ""

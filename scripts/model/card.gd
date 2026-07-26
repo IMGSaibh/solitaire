@@ -35,3 +35,16 @@ func get_rank_name() -> String:
 			return "K"
 		_:
 			return str(rank)
+
+func get_suit_name() -> String:
+	match suit:
+		Suit.CLUBS:
+			return "clubs"
+		Suit.DIAMONDS:
+			return "diamonds"
+		Suit.HEARTS:
+			return "hearts"
+		Suit.SPADES:
+			return "spades"
+		_:
+			return "unknown"
