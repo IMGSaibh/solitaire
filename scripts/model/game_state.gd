@@ -36,7 +36,6 @@ func create_deck() -> Array[CardData]:
 				rank,
 				false
 			)
-
 			deck.append(card)
 
 	return deck
@@ -50,7 +49,6 @@ func _clear_piles() -> void:
 
 	for pile in tableau:
 		pile.cards.clear()
-
 
 func _deal_tableau(deck: Array[CardData]) -> void:
 	for column_index in range(7):

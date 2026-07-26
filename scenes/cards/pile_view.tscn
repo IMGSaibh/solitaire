@@ -20,3 +20,4 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.1254902)
+script = ExtResource("1_rpcvx")

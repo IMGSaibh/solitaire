@@ -34,26 +34,23 @@ func _ready() -> void:
 	
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_clicked.bind(i))
-
-		tableau_views[i].card_clicked.connect(
-		_on_tableau_card_clicked.bind(i)
-		)	
+		tableau_views[i].card_clicked.connect(_on_tableau_card_clicked.bind(i))
 
 	refresh_board()
 
-	print("Stock: ", game_state.stock.size())
+	# print("Stock: ", game_state.stock.size())
 
-	for i in range(game_state.tableau.size()):
-		print("---- Tableau ", i + 1)
+	# for i in range(game_state.tableau.size()):
+	# 	print("---- Tableau ", i + 1)
 
-		for card in game_state.tableau[i].cards:
-			print(
-				card.get_suit_name(),
-				" ",
-				card.get_rank_name(),
-				" face_up=",
-				card.face_up
-			)
+	# 	for card in game_state.tableau[i].cards:
+	# 		print(
+	# 			card.get_suit_name(),
+	# 			" ",
+	# 			card.get_rank_name(),
+	# 			" face_up=",
+	# 			card.face_up
+	# 		)
 
 func refresh_board() -> void:
 	stock_view.setup(game_state.stock)
@@ -73,7 +70,9 @@ func _on_stock_clicked(_pile_view: PileView) -> void:
 	draw_card_from_stock()
 
 func draw_card_from_stock() -> void:
+	print("Ziehe Karte vom Stock")
 	if game_state.stock.is_empty():
+		print("Stock ist leer, recyceln des Abwurfstapels")
 		recycle_waste_to_stock()
 		return
 
@@ -103,11 +102,19 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 	if game_state.waste.is_empty():
 		return
 
-	selected_cards = [
+	selected_cards.clear()
+	selected_cards.append(
 		game_state.waste.get_top_card()
-	]
+	)
 
 	selected_source_pile = game_state.waste
+
+	print(
+		"Ausgewählt: ",
+		selected_cards[0].get_suit_name(),
+		" ",
+		selected_cards[0].get_rank_name()
+	)
 
 
 func _on_tableau_clicked(
@@ -142,10 +149,27 @@ func _on_tableau_card_clicked(
 
 	var pile := game_state.tableau[tableau_index]
 
-	if not KlondikeRules.can_pick_up_tableau_sequence(
-		pile,
-		card_index
-	):
+	# Es sind bereits Karten ausgewählt:
+	# Dann ist dieses Tableau das Ziel des Zuges.
+	if not selected_cards.is_empty():
+
+		if pile == selected_source_pile:
+			clear_selection()
+			return
+
+		if not KlondikeRules.can_move_sequence_to_tableau(
+			selected_cards,
+			pile
+		):
+			print("Zug nicht erlaubt")
+			return
+
+		move_selected_cards(pile)
+		return
+
+	# Noch nichts ausgewählt:
+	# Dann versuchen wir, ab dieser Tableau-Karte eine Folge auszuwählen.
+	if not KlondikeRules.can_pick_up_tableau_sequence(pile, card_index):
 		print("Diese Kartenfolge darf nicht aufgenommen werden")
 		return
 

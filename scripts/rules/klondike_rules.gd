@@ -2,10 +2,7 @@ class_name KlondikeRules
 extends RefCounted
 
 
-static func can_move_to_tableau(
-	card: CardData,
-	target_pile: CardPile
-) -> bool:
+static func can_move_to_tableau(card: CardData, target_pile: CardPile) -> bool:
 	if card == null:
 		return false
 
@@ -26,10 +23,7 @@ static func can_move_to_tableau(
 
 	return correct_rank and alternating_color
 
-static func can_pick_up_tableau_sequence(
-	pile: CardPile,
-	start_index: int
-) -> bool:
+static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bool:
 	if pile.type != CardPile.Type.TABLEAU:
 		return false
 
@@ -53,10 +47,7 @@ static func can_pick_up_tableau_sequence(
 
 	return true
 
-static func can_move_sequence_to_tableau(
-	cards: Array[CardData],
-	target_pile: CardPile
-) -> bool:
+static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: CardPile) -> bool:
 	if cards.is_empty():
 		return false
 
