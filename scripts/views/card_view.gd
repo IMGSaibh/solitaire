@@ -17,7 +17,7 @@ func update_visual() -> void:
 	if card.face_up:
 		texture_path = get_texture_path(card)
 	else:
-		texture_path = "res://assets/cards/back.png"
+		texture_path = "res://assets/cards/backs/back.png"
 	var texture := load(texture_path) as Texture2D
 
 	if texture == null:

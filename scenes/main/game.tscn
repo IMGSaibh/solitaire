@@ -29,91 +29,91 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PileView-Stock" parent="Board" unique_id=865190981 instance=ExtResource("2_ma5rq")]
+[node name="Stock" parent="Board" unique_id=865190981 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 60.0
 offset_top = 70.0
 offset_right = 160.0
 offset_bottom = 210.0
 
-[node name="PileView-Waste" parent="Board" unique_id=251156000 instance=ExtResource("2_ma5rq")]
+[node name="Waste" parent="Board" unique_id=251156000 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 180.0
 offset_top = 70.0
 offset_right = 280.0
 offset_bottom = 210.0
 
-[node name="PileView-Foundation1" parent="Board" unique_id=1073673478 instance=ExtResource("2_ma5rq")]
+[node name="Foundation1" parent="Board" unique_id=1073673478 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 540.0
 offset_top = 70.0
 offset_right = 640.0
 offset_bottom = 210.0
 
-[node name="PileView-Foundation2" parent="Board" unique_id=1712468677 instance=ExtResource("2_ma5rq")]
+[node name="Foundation2" parent="Board" unique_id=1712468677 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 660.0
 offset_top = 70.0
 offset_right = 760.0
 offset_bottom = 210.0
 
-[node name="PileView-Foundation3" parent="Board" unique_id=138997799 instance=ExtResource("2_ma5rq")]
+[node name="Foundation3" parent="Board" unique_id=138997799 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 780.0
 offset_top = 70.0
 offset_right = 880.0
 offset_bottom = 210.0
 
-[node name="PileView-Foundation4" parent="Board" unique_id=321497126 instance=ExtResource("2_ma5rq")]
+[node name="Foundation4" parent="Board" unique_id=321497126 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 900.0
 offset_top = 70.0
 offset_right = 1000.0
 offset_bottom = 210.0
 
-[node name="PileView-Tableau1" parent="Board" unique_id=1966071216 instance=ExtResource("2_ma5rq")]
+[node name="Tableau1" parent="Board" unique_id=1966071216 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 60.0
 offset_top = 260.0
 offset_right = 160.0
 offset_bottom = 400.0
 
-[node name="PileView-Tableau2" parent="Board" unique_id=225362752 instance=ExtResource("2_ma5rq")]
+[node name="Tableau2" parent="Board" unique_id=225362752 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 180.0
 offset_top = 260.0
 offset_right = 280.0
 offset_bottom = 400.0
 
-[node name="PileView-Tableau3" parent="Board" unique_id=1849009518 instance=ExtResource("2_ma5rq")]
+[node name="Tableau3" parent="Board" unique_id=1849009518 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 300.0
 offset_top = 260.0
 offset_right = 400.0
 offset_bottom = 400.0
 
-[node name="PileView-Tableau4" parent="Board" unique_id=1989901720 instance=ExtResource("2_ma5rq")]
+[node name="Tableau4" parent="Board" unique_id=1989901720 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 420.0
 offset_top = 260.0
 offset_right = 520.0
 offset_bottom = 400.0
 
-[node name="PileView-Tableau5" parent="Board" unique_id=1537111591 instance=ExtResource("2_ma5rq")]
+[node name="Tableau5" parent="Board" unique_id=1537111591 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 540.0
 offset_top = 260.0
 offset_right = 640.0
 offset_bottom = 400.0
 
-[node name="PileView-Tableau6" parent="Board" unique_id=1575284875 instance=ExtResource("2_ma5rq")]
+[node name="Tableau6" parent="Board" unique_id=1575284875 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 660.0
 offset_top = 260.0
 offset_right = 760.0
 offset_bottom = 400.0
 
-[node name="PileView-Tableau7" parent="Board" unique_id=138300963 instance=ExtResource("2_ma5rq")]
+[node name="Tableau7" parent="Board" unique_id=138300963 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 780.0
 offset_top = 260.0
