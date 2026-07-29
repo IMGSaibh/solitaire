@@ -30,15 +30,18 @@ func _ready() -> void:
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
 	waste_view.card_double_clicked.connect(_on_waste_card_double_clicked)
+	waste_view.cards_dropped.connect(_on_cards_dropped)
 	
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_clicked.bind(i))
 		tableau_views[i].card_clicked.connect(_on_tableau_card_clicked.bind(i))
 		tableau_views[i].card_double_clicked.connect(_on_tableau_card_double_clicked.bind(i))
+		tableau_views[i].cards_dropped.connect(_on_cards_dropped)
 	
 	for i in range(foundation_views.size()):
 		foundation_views[i].pile_clicked.connect(_on_foundation_clicked.bind(i))
 		foundation_views[i].card_clicked.connect(_on_foundation_card_clicked.bind(i))
+		foundation_views[i].cards_dropped.connect(_on_cards_dropped)
 
 	refresh_board()
 
@@ -193,6 +196,45 @@ func move_selected_cards(target_pile: CardPile) -> void:
 func clear_selection() -> void:
 	selected_cards.clear()
 	selected_source_pile = null
+
+func _on_cards_dropped(
+	source_pile: CardPile,
+	cards: Array[CardData],
+	target_pile: CardPile
+) -> void:
+	if source_pile == null or source_pile == target_pile or cards.is_empty():
+		return
+
+	var move_is_valid := false
+
+	match target_pile.type:
+		CardPile.Type.TABLEAU:
+			move_is_valid = KlondikeRules.can_move_sequence_to_tableau(
+				cards,
+				target_pile
+			)
+
+		CardPile.Type.FOUNDATION:
+			move_is_valid = cards.size() == 1 \
+				and KlondikeRules.can_move_to_foundation(
+					cards[0],
+					target_pile
+				)
+
+	if not move_is_valid:
+		return
+
+	for card in cards:
+		if not source_pile.cards.has(card):
+			return
+
+	for card in cards:
+		source_pile.cards.erase(card)
+		target_pile.add_card(card)
+
+	_flip_new_top_card(source_pile)
+	clear_selection()
+	refresh_board()
 
 func _flip_new_top_card(pile: CardPile) -> void:
 	if pile.type != CardPile.Type.TABLEAU:

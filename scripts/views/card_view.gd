@@ -4,12 +4,16 @@ extends Control
 @onready var texture_rect: TextureRect = $TextureRect
 
 var card: CardData
+var drag_payload: Variant = null
 signal card_clicked(card_view: CardView)
 signal card_double_clicked(card_view: CardView)
 
 func setup(card_data: CardData) -> void:
 	card = card_data
 	update_visual()
+
+func set_drag_payload(payload: Variant) -> void:
+	drag_payload = payload
 
 func update_visual() -> void:
 	if card == null:
@@ -56,3 +60,48 @@ func _gui_input(event: InputEvent) -> void:
 				card_double_clicked.emit(self)
 			else:
 				card_clicked.emit(self)
+
+func _get_drag_data(at_position: Vector2) -> Variant:
+	if drag_payload == null:
+		return null
+
+	var preview := Control.new()
+	var dragged_cards: Array = drag_payload.get("cards", [])
+
+	for i in range(dragged_cards.size()):
+		var dragged_card := dragged_cards[i] as CardData
+		var preview_card := TextureRect.new()
+
+		preview_card.texture = load(get_texture_path(dragged_card)) as Texture2D
+		preview_card.position = Vector2(
+			-at_position.x,
+			i * 28 - at_position.y
+		)
+		preview_card.size = Vector2(100, 140)
+		preview_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		preview_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		preview_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+		preview.add_child(preview_card)
+
+	preview.size = Vector2(
+		100,
+		140
+	)
+	set_drag_preview(preview)
+
+	return drag_payload
+
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	var pile_view := get_parent() as PileView
+
+	if pile_view == null:
+		return false
+
+	return pile_view.can_accept_drop(data)
+
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	var pile_view := get_parent() as PileView
+
+	if pile_view != null:
+		pile_view.accept_drop(data)
