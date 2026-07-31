@@ -14,6 +14,11 @@ config/name="solitaire"
 run/main_scene="uid://cuxyxq70dg81t"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

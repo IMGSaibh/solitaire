@@ -30,7 +30,7 @@ func refresh() -> void:
 
 		card_view.setup(card)
 		card_view.set_drag_payload(_create_drag_payload(i))
-		card_view.card_clicked.connect(_on_card_clicked.bind(i))
+		card_view.card_clicked.connect(_on_card_view_clicked.bind(i))
 		card_view.card_double_clicked.connect(_on_card_double_clicked.bind(i))
 
 		_position_card(card_view, i)
@@ -50,12 +50,8 @@ func _position_card(card_view: CardView, index: int) -> void:
 		_:
 			card_view.position = Vector2.ZERO
 
-func _on_card_clicked(_card_view: CardView, card_index: int) -> void:
-	if pile.type == CardPile.Type.TABLEAU \
-	or pile.type == CardPile.Type.FOUNDATION:
-		card_clicked.emit(self, card_index)
-	else:
-		pile_clicked.emit(self)
+func _on_card_view_clicked(_card_view: CardView, card_index: int) -> void:
+	card_clicked.emit(self, card_index)
 
 func _on_card_double_clicked(_card_view: CardView, card_index: int) -> void:
 	card_double_clicked.emit(self, card_index)

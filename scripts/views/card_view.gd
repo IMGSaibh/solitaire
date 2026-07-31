@@ -73,10 +73,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		var preview_card := TextureRect.new()
 
 		preview_card.texture = load(get_texture_path(dragged_card)) as Texture2D
-		preview_card.position = Vector2(
-			-at_position.x,
-			i * 28 - at_position.y
-		)
+		preview_card.position = Vector2(-at_position.x, i * 28 - at_position.y)
 		preview_card.size = Vector2(100, 140)
 		preview_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		preview_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -84,10 +81,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 
 		preview.add_child(preview_card)
 
-	preview.size = Vector2(
-		100,
-		140
-	)
+	preview.size = Vector2(100, 140)
 	set_drag_preview(preview)
 
 	return drag_payload

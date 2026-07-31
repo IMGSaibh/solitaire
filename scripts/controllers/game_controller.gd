@@ -28,50 +28,54 @@ func _ready() -> void:
 	game_state = GameState.new()
 	game_state.new_game()
 	stock_view.pile_clicked.connect(_on_stock_clicked)
+	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
+	waste_view.card_clicked.connect(_on_card_clicked)
 	waste_view.card_double_clicked.connect(_on_waste_card_double_clicked)
 	waste_view.cards_dropped.connect(_on_cards_dropped)
 	
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_clicked.bind(i))
-		tableau_views[i].card_clicked.connect(_on_tableau_card_clicked.bind(i))
+		tableau_views[i].card_clicked.connect(_on_card_clicked)
 		tableau_views[i].card_double_clicked.connect(_on_tableau_card_double_clicked.bind(i))
 		tableau_views[i].cards_dropped.connect(_on_cards_dropped)
 	
 	for i in range(foundation_views.size()):
 		foundation_views[i].pile_clicked.connect(_on_foundation_clicked.bind(i))
-		foundation_views[i].card_clicked.connect(_on_foundation_card_clicked.bind(i))
+		foundation_views[i].card_clicked.connect(_on_card_clicked)
 		foundation_views[i].cards_dropped.connect(_on_cards_dropped)
 
 	refresh_board()
-
-	# print("Stock: ", game_state.stock.size())
-
-	# for i in range(game_state.tableau.size()):
-	# 	print("---- Tableau ", i + 1)
-
-	# 	for card in game_state.tableau[i].cards:
-	# 		print(
-	# 			card.get_suit_name(),
-	# 			" ",
-	# 			card.get_rank_name(),
-	# 			" face_up=",
-	# 			card.face_up
-	# 		)
 
 func refresh_board() -> void:
 	stock_view.setup(game_state.stock)
 	waste_view.setup(game_state.waste)
 
 	for i in range(4):
-		foundation_views[i].setup(
-			game_state.foundations[i]
-		)
+		foundation_views[i].setup(game_state.foundations[i])
 
 	for i in range(7):
-		tableau_views[i].setup(
-			game_state.tableau[i]
-		)
+		tableau_views[i].setup(game_state.tableau[i])
+
+func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
+	match pile_view.pile.type:
+		CardPile.Type.STOCK:
+			_on_stock_clicked(pile_view)
+
+		CardPile.Type.WASTE:
+			_on_waste_clicked(pile_view)
+
+		CardPile.Type.TABLEAU:
+			var tableau_index := tableau_views.find(pile_view)
+
+			if tableau_index >= 0:
+				_on_tableau_card_clicked(pile_view, card_index, tableau_index)
+
+		CardPile.Type.FOUNDATION:
+			var foundation_index := foundation_views.find(pile_view)
+
+			if foundation_index >= 0:
+				_on_foundation_card_clicked(pile_view, card_index, foundation_index)
 
 func _on_stock_clicked(_pile_view: PileView) -> void:
 	draw_card_from_stock()
@@ -115,18 +119,12 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 
 	selected_source_pile = game_state.waste
 
-	print(
-		"Ausgewählt: ",
-		selected_cards[0].get_suit_name(),
-		" ",
-		selected_cards[0].get_rank_name()
-	)
+	print("Ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
 
 func _on_tableau_clicked(_pile_view: PileView, tableau_index: int) -> void:
 
 	if selected_cards.is_empty():
 		return
-
 
 	var target_pile := game_state.tableau[tableau_index]
 
@@ -155,10 +153,7 @@ func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_ind
 			clear_selection()
 			return
 
-		if not KlondikeRules.can_move_sequence_to_tableau(
-			selected_cards,
-			pile
-		):
+		if not KlondikeRules.can_move_sequence_to_tableau(selected_cards, pile):
 			print("Zug nicht erlaubt")
 			return
 
@@ -197,11 +192,7 @@ func clear_selection() -> void:
 	selected_cards.clear()
 	selected_source_pile = null
 
-func _on_cards_dropped(
-	source_pile: CardPile,
-	cards: Array[CardData],
-	target_pile: CardPile
-) -> void:
+func _on_cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pile: CardPile) -> void:
 	if source_pile == null or source_pile == target_pile or cards.is_empty():
 		return
 
@@ -209,17 +200,10 @@ func _on_cards_dropped(
 
 	match target_pile.type:
 		CardPile.Type.TABLEAU:
-			move_is_valid = KlondikeRules.can_move_sequence_to_tableau(
-				cards,
-				target_pile
-			)
+			move_is_valid = KlondikeRules.can_move_sequence_to_tableau(cards, target_pile)
 
 		CardPile.Type.FOUNDATION:
-			move_is_valid = cards.size() == 1 \
-				and KlondikeRules.can_move_to_foundation(
-					cards[0],
-					target_pile
-				)
+			move_is_valid = cards.size() == 1 and KlondikeRules.can_move_to_foundation(cards[0], target_pile)
 
 	if not move_is_valid:
 		return
@@ -248,10 +232,7 @@ func _flip_new_top_card(pile: CardPile) -> void:
 	if not top_card.face_up:
 		top_card.face_up = true
 
-func _on_foundation_clicked(
-	_pile_view: PileView,
-	foundation_index: int
-) -> void:
+func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void:
 
 	if selected_cards.is_empty():
 		return
@@ -269,10 +250,7 @@ func _on_foundation_clicked(
 
 	var card := selected_cards[0]
 
-	if not KlondikeRules.can_move_to_foundation(
-		card,
-		target_pile
-	):
+	if not KlondikeRules.can_move_to_foundation(card, target_pile):
 		print("Foundation-Zug nicht erlaubt")
 		return
 
@@ -342,11 +320,7 @@ func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
 			refresh_board()
 			return
 
-func _on_foundation_card_clicked(
-	_pile_view: PileView,
-	card_index: int,
-	foundation_index: int
-) -> void:
+func _on_foundation_card_clicked(_pile_view: PileView, card_index: int, foundation_index: int) -> void:
 
 	var pile := game_state.foundations[foundation_index]
 
@@ -363,10 +337,5 @@ func _on_foundation_card_clicked(
 		selected_cards.append(pile.get_top_card())
 		selected_source_pile = pile
 
-		print(
-			"Foundation-Karte ausgewählt: ",
-			selected_cards[0].get_suit_name(),
-			" ",
-			selected_cards[0].get_rank_name()
-		)
+		print("Foundation-Karte ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
 		return
