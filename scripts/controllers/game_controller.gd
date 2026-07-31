@@ -132,10 +132,7 @@ func _on_tableau_clicked(_pile_view: PileView, tableau_index: int) -> void:
 		clear_selection()
 		return
 
-	if not KlondikeRules.can_move_sequence_to_tableau(
-		selected_cards,
-		target_pile
-	):
+	if not KlondikeRules.can_move_sequence_to_tableau(selected_cards, target_pile):
 		print("Zug nicht erlaubt")
 		return
 

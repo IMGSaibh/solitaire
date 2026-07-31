@@ -30,11 +30,7 @@ func create_deck() -> Array[CardData]:
 
 	for suit in CardData.Suit.values():
 		for rank in range(1, 14):
-			var card := CardData.new(
-				suit,
-				rank,
-				false
-			)
+			var card := CardData.new(suit, rank, false)
 			deck.append(card)
 
 	return deck
