@@ -34,11 +34,7 @@ func update_visual() -> void:
 
 func get_texture_path(card_data: CardData) -> String:
 	var suit_name := get_suit_name(card_data.suit)
-
-	return "res://assets/cards/faces/%s_%02d.png" % [
-		suit_name,
-		card_data.rank
-	]
+	return "res://assets/cards/faces/%s_%02d.png" % [suit_name, card_data.rank]
 
 func get_suit_name(suit: CardData.Suit) -> String:
 	match suit:

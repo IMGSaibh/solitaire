@@ -12,7 +12,6 @@ var selected_source_pile: CardPile = null
 	$Board/Foundation3,
 	$Board/Foundation4
 ]
-
 @onready var tableau_views: Array[PileView] = [
 	$Board/Tableau1,
 	$Board/Tableau2,
@@ -113,16 +112,14 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 		return
 
 	selected_cards.clear()
-	selected_cards.append(
-		game_state.waste.get_top_card()
-	)
+	selected_cards.append(game_state.waste.get_top_card())
 
 	selected_source_pile = game_state.waste
 
 	print("Ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
 
 func _on_tableau_clicked(_pile_view: PileView, tableau_index: int) -> void:
-
+	print("Tableau angeklickt: ", tableau_index)
 	if selected_cards.is_empty():
 		return
 
@@ -139,7 +136,7 @@ func _on_tableau_clicked(_pile_view: PileView, tableau_index: int) -> void:
 	move_selected_cards(target_pile)
 
 func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
-
+	print("Tableau-Karte angeklickt: Tableau ", tableau_index, ", Karte ", card_index)
 	var pile := game_state.tableau[tableau_index]
 
 	# Es sind bereits Karten ausgewählt:
