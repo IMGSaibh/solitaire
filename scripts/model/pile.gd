@@ -5,7 +5,7 @@ enum Type {
 	STOCK,
 	WASTE,
 	FOUNDATION,
-	TABLEAU
+	TABLEAU,
 }
 
 var type: Type

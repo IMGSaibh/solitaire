@@ -8,18 +8,21 @@ var drag_payload: Variant = null
 signal card_clicked(card_view: CardView)
 signal card_double_clicked(card_view: CardView)
 
+
 func setup(card_data: CardData) -> void:
 	card = card_data
 	update_visual()
 
+
 func set_drag_payload(payload: Variant) -> void:
 	drag_payload = payload
+
 
 func update_visual() -> void:
 	if card == null:
 		return
 
-	var texture_path : String
+	var texture_path: String
 	if card.face_up:
 		texture_path = get_texture_path(card)
 	else:
@@ -32,9 +35,11 @@ func update_visual() -> void:
 
 	texture_rect.texture = texture
 
+
 func get_texture_path(card_data: CardData) -> String:
 	var suit_name := get_suit_name(card_data.suit)
 	return "res://assets/cards/faces/%s_%02d.png" % [suit_name, card_data.rank]
+
 
 func get_suit_name(suit: CardData.Suit) -> String:
 	match suit:
@@ -49,6 +54,7 @@ func get_suit_name(suit: CardData.Suit) -> String:
 		_:
 			return ""
 
+
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -56,6 +62,7 @@ func _gui_input(event: InputEvent) -> void:
 				card_double_clicked.emit(self)
 			else:
 				card_clicked.emit(self)
+
 
 func _get_drag_data(at_position: Vector2) -> Variant:
 	if drag_payload == null:
@@ -82,6 +89,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 
 	return drag_payload
 
+
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	var pile_view := get_parent() as PileView
 
@@ -89,6 +97,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 		return false
 
 	return pile_view.can_accept_drop(data)
+
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	var pile_view := get_parent() as PileView
@@ -98,6 +107,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 
 
 var outline_tween: Tween
+
 
 func outline_shader() -> void:
 	if outline_tween != null:

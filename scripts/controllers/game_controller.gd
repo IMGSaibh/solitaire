@@ -10,7 +10,7 @@ var selected_source_pile: CardPile = null
 	$Board/Foundation1,
 	$Board/Foundation2,
 	$Board/Foundation3,
-	$Board/Foundation4
+	$Board/Foundation4,
 ]
 @onready var tableau_views: Array[PileView] = [
 	$Board/Tableau1,
@@ -19,8 +19,9 @@ var selected_source_pile: CardPile = null
 	$Board/Tableau4,
 	$Board/Tableau5,
 	$Board/Tableau6,
-	$Board/Tableau7
+	$Board/Tableau7,
 ]
+
 
 func _ready() -> void:
 	print("Solitaire gestartet!")
@@ -33,19 +34,20 @@ func _ready() -> void:
 	waste_view.card_clicked.connect(_on_card_clicked)
 	waste_view.card_double_clicked.connect(_on_waste_card_double_clicked)
 	waste_view.cards_dropped.connect(_on_cards_dropped)
-	
+
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_empty_clicked.bind(i))
 		tableau_views[i].card_clicked.connect(_on_card_clicked)
 		tableau_views[i].card_double_clicked.connect(_on_tableau_card_double_clicked.bind(i))
 		tableau_views[i].cards_dropped.connect(_on_cards_dropped)
-	
+
 	for i in range(foundation_views.size()):
 		foundation_views[i].pile_clicked.connect(_on_foundation_clicked.bind(i))
 		foundation_views[i].card_clicked.connect(_on_card_clicked)
 		foundation_views[i].cards_dropped.connect(_on_cards_dropped)
 
 	refresh_board()
+
 
 func refresh_board() -> void:
 	stock_view.setup(game_state.stock)
@@ -56,6 +58,7 @@ func refresh_board() -> void:
 
 	for i in range(7):
 		tableau_views[i].setup(game_state.tableau[i])
+
 
 func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
 	match pile_view.pile.type:
@@ -75,8 +78,10 @@ func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
 			if foundation_index >= 0:
 				_on_foundation_card_clicked(pile_view, card_index, foundation_index)
 
+
 func _on_stock_clicked(_pile_view: PileView) -> void:
 	draw_card_from_stock()
+
 
 func draw_card_from_stock() -> void:
 	print("Ziehe Karte vom Stock")
@@ -93,6 +98,7 @@ func draw_card_from_stock() -> void:
 	stock_view.refresh()
 	waste_view.refresh()
 
+
 func recycle_waste_to_stock() -> void:
 	if game_state.waste.is_empty():
 		return
@@ -106,6 +112,7 @@ func recycle_waste_to_stock() -> void:
 	stock_view.refresh()
 	waste_view.refresh()
 
+
 func _on_waste_clicked(_pile_view: PileView) -> void:
 	if game_state.waste.is_empty():
 		return
@@ -116,6 +123,7 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 	selected_source_pile = game_state.waste
 
 	print("Ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
+
 
 func _on_tableau_empty_clicked(_pile_view: PileView, tableau_index: int) -> void:
 	print("Tableau empty angeklickt: ", tableau_index)
@@ -136,6 +144,7 @@ func _on_tableau_empty_clicked(_pile_view: PileView, tableau_index: int) -> void
 
 	move_selected_cards(target_pile)
 
+
 func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
 	print("Tableau clicked: ", tableau_index, ", Karte ", card_index)
 	var pile := game_state.tableau[tableau_index]
@@ -143,7 +152,6 @@ func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_ind
 	# Es sind bereits Karten ausgewählt:
 	# Dann ist dieses Tableau das Ziel des Zuges.
 	if not selected_cards.is_empty():
-
 		if pile == selected_source_pile:
 			clear_selection()
 			return
@@ -170,9 +178,17 @@ func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_ind
 
 	selected_source_pile = pile
 	_pile_view.outline_cards(card_index)
-	
-	print("Karte clicked: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name(), " Anzahl: ", selected_cards.size())
+
+	print(
+		"Karte clicked: ",
+		selected_cards[0].get_suit_name(),
+		" ",
+		selected_cards[0].get_rank_name(),
+		" Anzahl: ",
+		selected_cards.size(),
+	)
 	print("\n")
+
 
 func move_selected_cards(target_pile: CardPile) -> void:
 	if selected_source_pile == null:
@@ -187,11 +203,17 @@ func move_selected_cards(target_pile: CardPile) -> void:
 	clear_selection()
 	refresh_board()
 
+
 func clear_selection() -> void:
 	selected_cards.clear()
 	selected_source_pile = null
 
-func _on_cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pile: CardPile) -> void:
+
+func _on_cards_dropped(
+	source_pile: CardPile,
+	cards: Array[CardData],
+	target_pile: CardPile,
+) -> void:
 	if source_pile == null or source_pile == target_pile or cards.is_empty():
 		return
 
@@ -202,7 +224,9 @@ func _on_cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pil
 			move_is_valid = KlondikeRules.can_move_sequence_to_tableau(cards, target_pile)
 
 		CardPile.Type.FOUNDATION:
-			move_is_valid = cards.size() == 1 and KlondikeRules.can_move_to_foundation(cards[0], target_pile)
+			move_is_valid = (
+				cards.size() == 1 and KlondikeRules.can_move_to_foundation(cards[0], target_pile)
+			)
 
 	if not move_is_valid:
 		return
@@ -219,6 +243,7 @@ func _on_cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pil
 	clear_selection()
 	refresh_board()
 
+
 func _flip_new_top_card(pile: CardPile) -> void:
 	if pile.type != CardPile.Type.TABLEAU:
 		return
@@ -231,8 +256,8 @@ func _flip_new_top_card(pile: CardPile) -> void:
 	if not top_card.face_up:
 		top_card.face_up = true
 
-func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void:
 
+func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void:
 	if selected_cards.is_empty():
 		return
 
@@ -256,6 +281,7 @@ func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void
 
 	move_selected_card_to_foundation(target_pile)
 
+
 func move_selected_card_to_foundation(target_pile: CardPile) -> void:
 	if selected_source_pile == null:
 		return
@@ -273,6 +299,7 @@ func move_selected_card_to_foundation(target_pile: CardPile) -> void:
 	clear_selection()
 	refresh_board()
 
+
 func _on_waste_card_double_clicked(_pile_view: PileView, card_index: int) -> void:
 	if game_state.waste.is_empty():
 		return
@@ -285,7 +312,12 @@ func _on_waste_card_double_clicked(_pile_view: PileView, card_index: int) -> voi
 
 	auto_move_to_foundation(card, game_state.waste)
 
-func _on_tableau_card_double_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
+
+func _on_tableau_card_double_clicked(
+	_pile_view: PileView,
+	card_index: int,
+	tableau_index: int,
+) -> void:
 	var pile := game_state.tableau[tableau_index]
 
 	if pile.is_empty():
@@ -301,8 +333,8 @@ func _on_tableau_card_double_clicked(_pile_view: PileView, card_index: int, tabl
 
 	auto_move_to_foundation(card, pile)
 
-func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
 
+func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
 	for foundation in game_state.foundations:
 		if KlondikeRules.can_move_to_foundation(card, foundation):
 			source_pile.cards.erase(card)
@@ -314,8 +346,12 @@ func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
 			refresh_board()
 			return
 
-func _on_foundation_card_clicked(_pile_view: PileView, card_index: int, foundation_index: int) -> void:
 
+func _on_foundation_card_clicked(
+	_pile_view: PileView,
+	card_index: int,
+	foundation_index: int,
+) -> void:
 	var pile := game_state.foundations[foundation_index]
 
 	if pile.is_empty():
@@ -331,5 +367,10 @@ func _on_foundation_card_clicked(_pile_view: PileView, card_index: int, foundati
 		selected_cards.append(pile.get_top_card())
 		selected_source_pile = pile
 
-		print("Foundation-Karte ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
+		print(
+			"Foundation-Karte ausgewählt: ",
+			selected_cards[0].get_suit_name(),
+			" ",
+			selected_cards[0].get_rank_name(),
+		)
 		return

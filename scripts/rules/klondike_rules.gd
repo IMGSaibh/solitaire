@@ -23,6 +23,7 @@ static func can_move_to_tableau(card: CardData, target_pile: CardPile) -> bool:
 
 	return correct_rank and alternating_color
 
+
 static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bool:
 	if pile.type != CardPile.Type.TABLEAU:
 		return false
@@ -47,6 +48,7 @@ static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bo
 
 	return true
 
+
 static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: CardPile) -> bool:
 	if cards.is_empty():
 		return false
@@ -54,6 +56,7 @@ static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: Ca
 	var first_card := cards[0]
 
 	return can_move_to_tableau(first_card, target_pile)
+
 
 static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> bool:
 	if card == null:

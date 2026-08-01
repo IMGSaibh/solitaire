@@ -1,5 +1,5 @@
 # Solitaire Klondike
-```
+```bash
 res://
 │
 ├── assets/
@@ -42,4 +42,32 @@ res://
 │
 └── data/
     └── card_theme.tres
+```
+
+# Settings json
+```json
+{
+    "godotTools.editorPath.godot4": "c:\\Program Files (x86)\\Godot_v4.6.3-stable_win64.exe\\Godot_v4.6.3-stable_win64.exe",
+    "[gdscript]": {
+		"editor.defaultFormatter": "DoHe.godot-format",
+		"editor.formatOnSave": true,
+		"editor.insertSpaces": false,
+		"editor.detectIndentation": false,
+		"editor.tabSize": 4
+	},
+
+	"godotFormatter.enable": true,
+	"godotFormatter.enableLinter": true,
+
+	"godotFormatter.useSpaces": false,
+	"godotFormatter.indentSize": 4,
+
+	"godotFormatter.maxLineLength": 100,
+	"godotFormatter.linterMaxLineLength": 100,
+
+	"godotFormatter.verifyStructure": true,
+	"godotFormatter.reorderCode": false,
+
+	"godotFormatter.quoteStyle": "double"
+}
 ```
