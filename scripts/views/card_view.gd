@@ -95,3 +95,19 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 
 	if pile_view != null:
 		pile_view.accept_drop(data)
+
+
+var outline_tween: Tween
+
+func outline_shader() -> void:
+	if outline_tween != null:
+		outline_tween.kill()
+
+	texture_rect.set_instance_shader_parameter("outline_strength", 0.0)
+	outline_tween = create_tween()
+	outline_tween.tween_method(_set_outline_strength, 0.0, 1.0, 0.0)
+	outline_tween.tween_method(_set_outline_strength, 1.0, 0.0, 0.5)
+
+
+func _set_outline_strength(value: float) -> void:
+	texture_rect.set_instance_shader_parameter("outline_strength", value)

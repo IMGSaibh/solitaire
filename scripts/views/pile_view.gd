@@ -5,6 +5,7 @@ extends Control
 @export var card_scene: PackedScene
 
 var pile: CardPile
+var card_views: Array[CardView] = []
 
 signal card_clicked(pile_view: PileView, card_index: int)
 signal pile_clicked(pile_view: PileView)
@@ -14,7 +15,6 @@ signal cards_dropped(source_pile: CardPile, cards: Array[CardData],	target_pile:
 func setup(pile_data: CardPile) -> void:
 	pile = pile_data
 	refresh()
-
 
 func refresh() -> void:
 	_clear_cards()
@@ -27,6 +27,7 @@ func refresh() -> void:
 
 		var card_view := card_scene.instantiate() as CardView
 		add_child(card_view)
+		card_views.append(card_view)
 
 		card_view.setup(card)
 		card_view.set_drag_payload(_create_drag_payload(i))
@@ -35,12 +36,11 @@ func refresh() -> void:
 
 		_position_card(card_view, i)
 
-
 func _clear_cards() -> void:
-	for child in get_children():
-		if child is CardView:
-			child.queue_free()
+	for card_view in card_views:
+		card_view.queue_free()
 
+	card_views.clear()
 
 func _position_card(card_view: CardView, index: int) -> void:
 	match pile.type:
@@ -72,10 +72,7 @@ func _create_drag_payload(card_index: int) -> Variant:
 	for i in range(card_index, pile.cards.size()):
 		dragged_cards.append(pile.cards[i])
 
-	return {
-		"source_pile": pile,
-		"cards": dragged_cards
-	}
+	return {"source_pile": pile, "cards": dragged_cards}
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	return can_accept_drop(data)
@@ -112,3 +109,7 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			pile_clicked.emit(self)
+
+func outline_cards(start_index: int) -> void:
+	for i in range(start_index, card_views.size()):
+		card_views[i].outline_shader()

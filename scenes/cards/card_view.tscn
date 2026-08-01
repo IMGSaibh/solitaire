@@ -2,6 +2,11 @@
 
 [ext_resource type="Script" uid="uid://le3riownw630" path="res://scripts/views/card_view.gd" id="1_rfc1g"]
 [ext_resource type="Texture2D" uid="uid://bj5grfvmjf6oj" path="res://assets/cards/faces/clubs_01.png" id="2_d56wy"]
+[ext_resource type="Shader" uid="uid://wirrs015eyfx" path="res://shader/card_outline.gdshader" id="2_qusmm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iq0x8"]
+shader = ExtResource("2_qusmm")
+shader_parameter/outline_width = 3.0
 
 [node name="CardView" type="Control" unique_id=1586208210]
 layout_mode = 3
@@ -11,6 +16,7 @@ offset_bottom = 140.0
 script = ExtResource("1_rfc1g")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1220745914]
+material = SubResource("ShaderMaterial_iq0x8")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

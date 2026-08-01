@@ -130,6 +130,7 @@ func _on_tableau_empty_clicked(_pile_view: PileView, tableau_index: int) -> void
 
 	if not KlondikeRules.can_move_sequence_to_tableau(selected_cards, target_pile):
 		print("Zug nicht erlaubt")
+		print("\n")
 		clear_selection()
 		return
 
@@ -149,6 +150,7 @@ func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_ind
 
 		if not KlondikeRules.can_move_sequence_to_tableau(selected_cards, pile):
 			print("Zug nicht erlaubt")
+			print("\n")
 			clear_selection()
 			return
 
@@ -167,7 +169,8 @@ func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_ind
 		selected_cards.append(pile.cards[i])
 
 	selected_source_pile = pile
-
+	_pile_view.outline_cards(card_index)
+	
 	print("Karte clicked: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name(), " Anzahl: ", selected_cards.size())
 	print("\n")
 
@@ -248,6 +251,7 @@ func _on_foundation_clicked(_pile_view: PileView, foundation_index: int) -> void
 
 	if not KlondikeRules.can_move_to_foundation(card, target_pile):
 		print("Foundation-Zug nicht erlaubt")
+		print("\n")
 		return
 
 	move_selected_card_to_foundation(target_pile)
