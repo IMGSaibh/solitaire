@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://bpef124avlp48" path="res://scripts/controllers/game_controller.gd" id="1_e64el"]
 [ext_resource type="PackedScene" uid="uid://qsmsyhxi86cu" path="res://scenes/cards/pile_view.tscn" id="2_ma5rq"]
+[ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
+[ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
 
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
@@ -119,3 +121,14 @@ offset_left = 780.0
 offset_top = 260.0
 offset_right = 880.0
 offset_bottom = 400.0
+
+[node name="WinAnimationLayer" type="Control" parent="." unique_id=1354470684]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_e3dby")
+card_scene = ExtResource("4_gsayk")

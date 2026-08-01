@@ -21,6 +21,9 @@ var selected_source_pile: CardPile = null
 	$Board/Tableau6,
 	$Board/Tableau7,
 ]
+@onready var win_animation: WinAnimation = $WinAnimationLayer
+
+var win_animation_started := false
 
 
 func _ready() -> void:
@@ -243,6 +246,9 @@ func _on_cards_dropped(
 	clear_selection()
 	refresh_board()
 
+	if target_pile.type == CardPile.Type.FOUNDATION:
+		check_for_win()
+
 
 func _flip_new_top_card(pile: CardPile) -> void:
 	if pile.type != CardPile.Type.TABLEAU:
@@ -298,6 +304,7 @@ func move_selected_card_to_foundation(target_pile: CardPile) -> void:
 
 	clear_selection()
 	refresh_board()
+	check_for_win()
 
 
 func _on_waste_card_double_clicked(_pile_view: PileView, card_index: int) -> void:
@@ -344,6 +351,7 @@ func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
 
 			clear_selection()
 			refresh_board()
+			check_for_win()
 			return
 
 
@@ -374,3 +382,23 @@ func _on_foundation_card_clicked(
 			selected_cards[0].get_rank_name(),
 		)
 		return
+
+
+func start_win_animation() -> void:
+	win_animation.play(game_state.foundations, foundation_views)
+
+
+func check_for_win() -> void:
+	if win_animation_started or not is_game_won():
+		return
+
+	win_animation_started = true
+	start_win_animation()
+
+
+func is_game_won() -> bool:
+	for foundation in game_state.foundations:
+		if foundation.size() != 13:
+			return false
+
+	return true
