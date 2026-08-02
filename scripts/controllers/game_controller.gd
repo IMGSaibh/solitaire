@@ -402,3 +402,31 @@ func is_game_won() -> bool:
 			return false
 
 	return true
+
+# ============================================================================
+# Debug implementation for animation test. Only available in debug builds.
+# ============================================================================
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not OS.is_debug_build():
+		return
+
+	if event is InputEventKey:
+		if event.keycode == KEY_W and event.pressed and not event.echo:
+			_start_test_win_animation()
+
+
+func _start_test_win_animation() -> void:
+	var test_foundations: Array[CardPile] = []
+
+	for i in range(4):
+		test_foundations.append(CardPile.new(CardPile.Type.FOUNDATION))
+
+	var deck := game_state.create_deck()
+
+	for card in deck:
+		card.face_up = true
+		test_foundations[card.suit].add_card(card)
+
+	win_animation.play(test_foundations, foundation_views)
