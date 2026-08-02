@@ -7,7 +7,15 @@ var selected_source_pile: CardPile = null
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
 @onready var foundation_views: Array[PileView] = [$Board/Foundation1, $Board/Foundation2, $Board/Foundation3, $Board/Foundation4]
-@onready var tableau_views: Array[PileView] = [$Board/Tableau1, $Board/Tableau2, $Board/Tableau3, $Board/Tableau4, $Board/Tableau5, $Board/Tableau6, $Board/Tableau7]
+@onready var tableau_views: Array[PileView] = [
+	$Board/Tableau1,
+	$Board/Tableau2,
+	$Board/Tableau3,
+	$Board/Tableau4,
+	$Board/Tableau5,
+	$Board/Tableau6,
+	$Board/Tableau7,
+]
 @onready var win_animation: WinAnimation = $WinAnimationLayer
 
 var win_animation_started := false
