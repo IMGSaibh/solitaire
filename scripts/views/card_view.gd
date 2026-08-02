@@ -5,8 +5,9 @@ extends Control
 
 var card: CardData
 var drag_payload: Variant = null
+var drag_started := false
 signal card_clicked(card_view: CardView)
-signal card_double_clicked(card_view: CardView)
+signal card_released(card_view: CardView)
 
 
 func setup(card_data: CardData) -> void:
@@ -57,16 +58,21 @@ func get_suit_name(suit: CardData.Suit) -> String:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			if event.double_click:
-				card_double_clicked.emit(self)
-			else:
-				card_clicked.emit(self)
+		if event.button_index != MOUSE_BUTTON_LEFT:
+			return
+
+		if event.pressed:
+			drag_started = false
+			card_clicked.emit(self)
+		elif not drag_started:
+			card_released.emit(self)
 
 
 func _get_drag_data(at_position: Vector2) -> Variant:
 	if drag_payload == null:
 		return null
+
+	drag_started = true
 
 	var preview := Control.new()
 	var dragged_cards: Array = drag_payload.get("cards", [])

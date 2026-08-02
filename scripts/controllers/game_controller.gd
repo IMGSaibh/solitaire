@@ -22,13 +22,13 @@ func _ready() -> void:
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
 	waste_view.card_clicked.connect(_on_card_clicked)
-	waste_view.card_double_clicked.connect(_on_waste_card_double_clicked)
+	waste_view.card_released.connect(_on_waste_card_released)
 	waste_view.cards_dropped.connect(_on_cards_dropped)
 
 	for i in range(tableau_views.size()):
 		tableau_views[i].pile_clicked.connect(_on_tableau_empty_clicked.bind(i))
 		tableau_views[i].card_clicked.connect(_on_card_clicked)
-		tableau_views[i].card_double_clicked.connect(_on_tableau_card_double_clicked.bind(i))
+		tableau_views[i].card_released.connect(_on_tableau_card_released.bind(i))
 		tableau_views[i].cards_dropped.connect(_on_cards_dropped)
 
 	for i in range(foundation_views.size()):
@@ -301,7 +301,7 @@ func move_selected_card_to_foundation(target_pile: CardPile) -> void:
 	check_for_win()
 
 
-func _on_waste_card_double_clicked(_pile_view: PileView, card_index: int) -> void:
+func _on_waste_card_released(_pile_view: PileView, card_index: int) -> void:
 	if game_state.waste.is_empty():
 		return
 
@@ -311,10 +311,15 @@ func _on_waste_card_double_clicked(_pile_view: PileView, card_index: int) -> voi
 
 	var card := game_state.waste.get_top_card()
 
+	if selected_source_pile != game_state.waste \
+			or selected_cards.size() != 1 \
+			or selected_cards[0] != card:
+		return
+
 	auto_move_to_foundation(card, game_state.waste)
 
 
-func _on_tableau_card_double_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
+func _on_tableau_card_released(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
 	var pile := game_state.tableau[tableau_index]
 
 	if pile.is_empty():
@@ -326,6 +331,11 @@ func _on_tableau_card_double_clicked(_pile_view: PileView, card_index: int, tabl
 	var card := pile.get_top_card()
 
 	if not card.face_up:
+		return
+
+	if selected_source_pile != pile \
+			or selected_cards.size() != 1 \
+			or selected_cards[0] != card:
 		return
 
 	auto_move_to_foundation(card, pile)

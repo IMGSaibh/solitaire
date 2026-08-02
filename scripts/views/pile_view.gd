@@ -8,7 +8,7 @@ var card_views: Array[CardView] = []
 
 signal card_clicked(pile_view: PileView, card_index: int)
 signal pile_clicked(pile_view: PileView)
-signal card_double_clicked(pile_view: PileView, card_index: int)
+signal card_released(pile_view: PileView, card_index: int)
 signal cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pile: CardPile)
 
 
@@ -33,7 +33,7 @@ func refresh() -> void:
 		card_view.setup(card)
 		card_view.set_drag_payload(_create_drag_payload(i))
 		card_view.card_clicked.connect(_on_card_view_clicked.bind(i))
-		card_view.card_double_clicked.connect(_on_card_double_clicked.bind(i))
+		card_view.card_released.connect(_on_card_released.bind(i))
 
 		_position_card(card_view, i)
 
@@ -57,8 +57,8 @@ func _on_card_view_clicked(_card_view: CardView, card_index: int) -> void:
 	card_clicked.emit(self, card_index)
 
 
-func _on_card_double_clicked(_card_view: CardView, card_index: int) -> void:
-	card_double_clicked.emit(self, card_index)
+func _on_card_released(_card_view: CardView, card_index: int) -> void:
+	card_released.emit(self, card_index)
 
 
 func _create_drag_payload(card_index: int) -> Variant:
