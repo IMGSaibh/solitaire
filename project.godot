@@ -13,7 +13,7 @@ config_version=5
 config/name="solitaire"
 run/main_scene="uid://cuxyxq70dg81t"
 config/features=PackedStringArray("4.6", "Forward Plus")
-run/max_fps=60
+run/max_fps=120
 
 [display]
 
