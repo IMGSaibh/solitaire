@@ -316,43 +316,53 @@ func _on_waste_card_released(_pile_view: PileView, card_index: int) -> void:
 			or selected_cards[0] != card:
 		return
 
-	auto_move_to_foundation(card, game_state.waste)
+	auto_move_to(selected_cards, game_state.waste)
 
 
 func _on_tableau_card_released(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
 	var pile := game_state.tableau[tableau_index]
 
-	if pile.is_empty():
+	if card_index < 0 or card_index >= pile.cards.size():
 		return
 
-	if card_index != pile.cards.size() - 1:
-		return
-
-	var card := pile.get_top_card()
-
-	if not card.face_up:
-		return
+	var first_card := pile.cards[card_index]
 
 	if selected_source_pile != pile \
-			or selected_cards.size() != 1 \
-			or selected_cards[0] != card:
+			or selected_cards.is_empty() \
+			or selected_cards[0] != first_card:
 		return
 
-	auto_move_to_foundation(card, pile)
+	auto_move_to(selected_cards, pile)
 
 
-func auto_move_to_foundation(card: CardData, source_pile: CardPile) -> void:
-	for foundation in game_state.foundations:
-		if KlondikeRules.can_move_to_foundation(card, foundation):
-			source_pile.cards.erase(card)
-			foundation.add_card(card)
+func auto_move_to(cards: Array[CardData], source_pile: CardPile) -> void:
+	if cards.is_empty():
+		return
 
-			_flip_new_top_card(source_pile)
+	if cards.size() == 1:
+		for foundation in game_state.foundations:
+			if KlondikeRules.can_move_to_foundation(cards[0], foundation):
+				_move_cards_automatically(cards, source_pile, foundation)
+				check_for_win()
+				return
 
-			clear_selection()
-			refresh_board()
-			check_for_win()
+	for tableau in game_state.tableau:
+		if tableau == source_pile:
+			continue
+
+		if KlondikeRules.can_move_sequence_to_tableau(cards, tableau):
+			_move_cards_automatically(cards, source_pile, tableau)
 			return
+
+
+func _move_cards_automatically(cards: Array[CardData], source_pile: CardPile, target_pile: CardPile) -> void:
+	for card in cards:
+		source_pile.cards.erase(card)
+		target_pile.add_card(card)
+
+	_flip_new_top_card(source_pile)
+	clear_selection()
+	refresh_board()
 
 
 func start_win_animation() -> void:
