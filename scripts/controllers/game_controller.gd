@@ -79,6 +79,9 @@ func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
 func _on_stock_clicked(_pile_view: PileView) -> void:
 	draw_card_from_stock()
 
+	if not game_state.stock.is_empty():
+		stock_view.outline_cards(game_state.stock.cards.size() - 1)
+
 
 func _on_waste_clicked(_pile_view: PileView) -> void:
 	if game_state.waste.is_empty():
@@ -88,6 +91,7 @@ func _on_waste_clicked(_pile_view: PileView) -> void:
 	selected_cards.append(game_state.waste.get_top_card())
 
 	selected_source_pile = game_state.waste
+	_pile_view.outline_cards(game_state.waste.cards.size() - 1)
 
 	print("Ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
 
