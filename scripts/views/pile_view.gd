@@ -124,4 +124,16 @@ func _gui_input(event: InputEvent) -> void:
 
 func outline_cards(start_index: int) -> void:
 	for i in range(start_index, card_views.size()):
-		card_views[i].outline_shader()
+		card_views[i].set_outline_enabled(true)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton \
+			and event.button_index == MOUSE_BUTTON_LEFT \
+			and not event.pressed:
+		clear_outlines()
+
+
+func clear_outlines() -> void:
+	for card_view in card_views:
+		card_view.set_outline_enabled(false)

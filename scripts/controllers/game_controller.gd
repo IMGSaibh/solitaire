@@ -242,11 +242,7 @@ func _on_tableau_card_released(_pile_view: PileView, card_index: int, tableau_in
 	auto_move_to(selected_cards, pile)
 
 
-func _on_foundation_card_released(
-	_pile_view: PileView,
-	card_index: int,
-	foundation_index: int,
-) -> void:
+func _on_foundation_card_released(_pile_view: PileView, card_index: int, foundation_index: int) -> void:
 	var pile := game_state.foundations[foundation_index]
 
 	if card_index < 0 or card_index >= pile.cards.size():

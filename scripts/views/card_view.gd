@@ -10,8 +10,14 @@ signal card_clicked(card_view: CardView)
 signal card_released(card_view: CardView)
 
 
+func _ready() -> void:
+	# Keep shader parameters local to this card.
+	texture_rect.material = texture_rect.material.duplicate()
+
+
 func setup(card_data: CardData) -> void:
 	card = card_data
+	set_outline_enabled(false)
 	update_visual()
 
 
@@ -112,18 +118,6 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 		pile_view.accept_drop(data)
 
 
-var outline_tween: Tween
-
-
-func outline_shader() -> void:
-	if outline_tween != null:
-		outline_tween.kill()
-
-	texture_rect.set_instance_shader_parameter("outline_strength", 0.0)
-	outline_tween = create_tween()
-	outline_tween.tween_method(_set_outline_strength, 0.0, 1.0, 0.0)
-	outline_tween.tween_method(_set_outline_strength, 1.0, 0.0, 0.5)
-
-
-func _set_outline_strength(value: float) -> void:
-	texture_rect.set_instance_shader_parameter("outline_strength", value)
+func set_outline_enabled(enabled: bool) -> void:
+	var shader_material := texture_rect.material as ShaderMaterial
+	shader_material.set_shader_parameter("outline_enabled", enabled)

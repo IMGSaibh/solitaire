@@ -6,6 +6,8 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iq0x8"]
 shader = ExtResource("2_qusmm")
+shader_parameter/outline_color = Color(1, 0, 0, 1)
+shader_parameter/outline_enabled = true
 shader_parameter/outline_width = 3.0
 
 [node name="CardView" type="Control" unique_id=1586208210]
