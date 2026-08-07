@@ -48,7 +48,7 @@ func _clear_cards() -> void:
 func _position_card(card_view: CardView, index: int) -> void:
 	match pile.type:
 		CardPile.Type.TABLEAU:
-			card_view.position = Vector2(0, index * 28)
+			card_view.position = Vector2(0, index * 50)
 		_:
 			card_view.position = Vector2.ZERO
 
