@@ -6,6 +6,7 @@ extends Control
 var card: CardData
 var drag_payload: Variant = null
 var drag_started := false
+var hidden_drag_views: Array[CardView] = []
 signal card_clicked(card_view: CardView)
 signal card_released(card_view: CardView)
 
@@ -13,6 +14,11 @@ signal card_released(card_view: CardView)
 func _ready() -> void:
 	# Keep shader parameters local to this card.
 	texture_rect.material = texture_rect.material.duplicate()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END:
+		_show_dragged_cards()
 
 
 func setup(card_data: CardData) -> void:
@@ -88,18 +94,37 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		var preview_card := TextureRect.new()
 
 		preview_card.texture = load(get_texture_path(dragged_card)) as Texture2D
-		preview_card.position = Vector2(-at_position.x, i * 28 - at_position.y)
+		preview_card.position = Vector2(-at_position.x, i * 50 - at_position.y)
 		preview_card.size = size
-		preview_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		preview_card.material = texture_rect.material.duplicate()
+		var preview_material := preview_card.material as ShaderMaterial
+		preview_material.set_shader_parameter("outline_enabled", true)
 		preview_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-		preview_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
 		preview.add_child(preview_card)
 
-	preview.size = size
 	set_drag_preview(preview)
+	_hide_dragged_cards(dragged_cards)
 
 	return drag_payload
+
+
+func _hide_dragged_cards(dragged_cards: Array) -> void:
+	var pile_view := get_parent() as PileView
+	if pile_view == null:
+		return
+
+	hidden_drag_views.clear()
+	for card_view in pile_view.card_views:
+		if dragged_cards.has(card_view.card):
+			card_view.visible = false
+			hidden_drag_views.append(card_view)
+
+
+func _show_dragged_cards() -> void:
+	for card_view in hidden_drag_views:
+		if is_instance_valid(card_view):
+			card_view.visible = true
+	hidden_drag_views.clear()
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
