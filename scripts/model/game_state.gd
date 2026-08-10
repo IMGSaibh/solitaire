@@ -1,6 +1,10 @@
 class_name GameState
 extends RefCounted
 
+const FOUNDATION_COUNT := 4
+const TABLEAU_COUNT := 7
+const MAX_RANK := 13
+
 var stock: CardPile
 var waste: CardPile
 
@@ -16,10 +20,10 @@ func _create_piles() -> void:
 	stock = CardPile.new(CardPile.Type.STOCK)
 	waste = CardPile.new(CardPile.Type.WASTE)
 
-	for i in range(4):
+	for i in range(FOUNDATION_COUNT):
 		foundations.append(CardPile.new(CardPile.Type.FOUNDATION))
 
-	for i in range(7):
+	for i in range(TABLEAU_COUNT):
 		tableau.append(CardPile.new(CardPile.Type.TABLEAU))
 
 
@@ -27,7 +31,7 @@ func create_deck() -> Array[CardData]:
 	var deck: Array[CardData] = []
 
 	for suit in CardData.Suit.values():
-		for rank in range(1, 14):
+		for rank in range(1, MAX_RANK + 1):
 			var card := CardData.new(suit, rank, false)
 			deck.append(card)
 
@@ -46,7 +50,7 @@ func _clear_piles() -> void:
 
 
 func _deal_tableau(deck: Array[CardData]) -> void:
-	for column_index in range(7):
+	for column_index in range(TABLEAU_COUNT):
 		for card_index in range(column_index + 1):
 			var card: CardData = deck.pop_back()
 
@@ -71,3 +75,66 @@ func new_game() -> void:
 
 	_deal_tableau(deck)
 	_fill_stock(deck)
+
+
+func create_snapshot() -> Dictionary:
+	return {
+		"stock": _serialize_pile(stock),
+		"waste": _serialize_pile(waste),
+		"foundations": foundations.map(_serialize_pile),
+		"tableau": tableau.map(_serialize_pile),
+	}
+
+
+func restore_snapshot(snapshot: Dictionary) -> bool:
+	var stock_cards: Variant = _deserialize_cards(snapshot.get("stock", []))
+	var waste_cards: Variant = _deserialize_cards(snapshot.get("waste", []))
+	var foundation_data := snapshot.get("foundations", []) as Array
+	var tableau_data := snapshot.get("tableau", []) as Array
+
+	if stock_cards == null or waste_cards == null:
+		return false
+	if foundation_data.size() != FOUNDATION_COUNT or tableau_data.size() != TABLEAU_COUNT:
+		return false
+
+	var parsed_foundations: Array[Array] = []
+	var parsed_tableau: Array[Array] = []
+	for pile_data in foundation_data:
+		var parsed: Variant = _deserialize_cards(pile_data)
+		if parsed == null:
+			return false
+		parsed_foundations.append(parsed)
+	for pile_data in tableau_data:
+		var parsed: Variant = _deserialize_cards(pile_data)
+		if parsed == null:
+			return false
+		parsed_tableau.append(parsed)
+
+	stock.cards.assign(stock_cards)
+	waste.cards.assign(waste_cards)
+	for i in range(FOUNDATION_COUNT):
+		foundations[i].cards.assign(parsed_foundations[i])
+	for i in range(TABLEAU_COUNT):
+		tableau[i].cards.assign(parsed_tableau[i])
+	return true
+
+
+func _serialize_pile(pile: CardPile) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for card in pile.cards:
+		result.append(card.to_dict())
+	return result
+
+
+func _deserialize_cards(data: Variant) -> Variant:
+	if not data is Array:
+		return null
+	var result: Array[CardData] = []
+	for entry in data:
+		if not entry is Dictionary:
+			return null
+		var card := CardData.from_dict(entry)
+		if card == null:
+			return null
+		result.append(card)
+	return result

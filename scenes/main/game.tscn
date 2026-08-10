@@ -1,9 +1,10 @@
-[gd_scene format=3 uid="uid://cuxyxq70dg81t"]
+[gd_scene load_steps=6 format=3 uid="uid://cuxyxq70dg81t"]
 
 [ext_resource type="Script" uid="uid://bpef124avlp48" path="res://scripts/controllers/game_controller.gd" id="1_e64el"]
 [ext_resource type="PackedScene" uid="uid://qsmsyhxi86cu" path="res://scenes/cards/pile_view.tscn" id="2_ma5rq"]
 [ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
+[ext_resource type="Script" path="res://scripts/views/board_view.gd" id="5_board"]
 
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
@@ -30,6 +31,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("5_board")
 
 [node name="Stock" parent="Board" unique_id=865190981 instance=ExtResource("2_ma5rq")]
 layout_mode = 0

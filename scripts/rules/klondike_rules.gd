@@ -3,7 +3,7 @@ extends RefCounted
 
 
 static func can_move_to_tableau(card: CardData, target_pile: CardPile) -> bool:
-	if card == null:
+	if card == null or target_pile == null:
 		return false
 
 	if target_pile.type != CardPile.Type.TABLEAU:
@@ -25,7 +25,7 @@ static func can_move_to_tableau(card: CardData, target_pile: CardPile) -> bool:
 
 
 static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bool:
-	if pile.type != CardPile.Type.TABLEAU:
+	if pile == null or pile.type != CardPile.Type.TABLEAU:
 		return false
 
 	if start_index < 0 or start_index >= pile.cards.size():
@@ -50,7 +50,7 @@ static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bo
 
 
 static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: CardPile) -> bool:
-	if cards.is_empty():
+	if cards.is_empty() or not is_valid_tableau_sequence(cards):
 		return false
 
 	var first_card := cards[0]
@@ -59,7 +59,7 @@ static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: Ca
 
 
 static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> bool:
-	if card == null:
+	if card == null or target_pile == null or not card.face_up:
 		return false
 
 	if target_pile.type != CardPile.Type.FOUNDATION:
@@ -75,3 +75,43 @@ static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> boo
 	var next_rank := card.rank == top_card.rank + 1
 
 	return same_suit and next_rank
+
+
+static func is_valid_tableau_sequence(cards: Array[CardData]) -> bool:
+	if cards.is_empty():
+		return false
+	for card in cards:
+		if card == null or not card.face_up:
+			return false
+	for i in range(cards.size() - 1):
+		var upper := cards[i]
+		var lower := cards[i + 1]
+		if lower.rank != upper.rank - 1 or lower.is_red() == upper.is_red():
+			return false
+	return true
+
+
+static func can_move(source: CardPile, start_index: int, target: CardPile) -> bool:
+	if source == null or target == null or source == target:
+		return false
+	if start_index < 0 or start_index >= source.cards.size():
+		return false
+
+	var cards := source.get_cards_from(start_index)
+	match source.type:
+		CardPile.Type.TABLEAU:
+			if not can_pick_up_tableau_sequence(source, start_index):
+				return false
+		CardPile.Type.WASTE, CardPile.Type.FOUNDATION:
+			if start_index != source.cards.size() - 1 or cards.size() != 1 or not cards[0].face_up:
+				return false
+		_:
+			return false
+
+	match target.type:
+		CardPile.Type.TABLEAU:
+			return can_move_sequence_to_tableau(cards, target)
+		CardPile.Type.FOUNDATION:
+			return cards.size() == 1 and can_move_to_foundation(cards[0], target)
+		_:
+			return false

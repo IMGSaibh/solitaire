@@ -1,8 +1,10 @@
 extends Control
 
+var game_service: GameService
 var game_state: GameState
-var selected_cards: Array[CardData] = []
-var selected_source_pile: CardPile = null
+var selected_source_pile: CardPile
+var selected_start_index := -1
+var win_animation_started := false
 
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
@@ -18,325 +20,221 @@ var selected_source_pile: CardPile = null
 ]
 @onready var win_animation: WinAnimation = $WinAnimationLayer
 
-var win_animation_started := false
-
 
 func _ready() -> void:
-	print("Solitaire gestartet!")
-	print("================================")
-	game_state = GameState.new()
-	game_state.new_game()
+	game_service = GameService.new()
+	game_state = game_service.state
+	_connect_signals_to_views()
+	new_game()
+
+
+func _connect_signals_to_views() -> void:
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
 	waste_view.card_clicked.connect(_on_card_clicked)
-	waste_view.card_released.connect(_on_waste_card_released)
+	waste_view.card_released.connect(_on_card_released)
 	waste_view.cards_dropped.connect(_on_cards_dropped)
 
-	for i in range(tableau_views.size()):
-		tableau_views[i].card_clicked.connect(_on_card_clicked)
-		tableau_views[i].card_released.connect(_on_tableau_card_released.bind(i))
-		tableau_views[i].cards_dropped.connect(_on_cards_dropped)
+	for view in tableau_views:
+		view.card_clicked.connect(_on_card_clicked)
+		view.card_released.connect(_on_card_released)
+		view.cards_dropped.connect(_on_cards_dropped)
 
-	for i in range(foundation_views.size()):
-		foundation_views[i].card_clicked.connect(_on_card_clicked)
-		foundation_views[i].card_released.connect(_on_foundation_card_released.bind(i))
-		foundation_views[i].cards_dropped.connect(_on_cards_dropped)
+	for view in foundation_views:
+		view.card_clicked.connect(_on_card_clicked)
+		view.card_released.connect(_on_card_released)
+		view.cards_dropped.connect(_on_cards_dropped)
 
+
+func new_game() -> void:
+	win_animation.stop()
+	win_animation_started = false
+	game_service.new_game()
+	clear_selection()
 	refresh_board()
 
 
 func refresh_board() -> void:
-	stock_view.setup(game_state.stock)
-	waste_view.setup(game_state.waste)
+	var reusable_views: Dictionary = { }
+	for view in _all_pile_views():
+		for card_view in view.card_views:
+			if card_view.card != null:
+				reusable_views[card_view.card] = card_view
 
-	for i in range(4):
-		foundation_views[i].setup(game_state.foundations[i])
+	stock_view.setup_with_pool(game_state.stock, reusable_views)
+	waste_view.setup_with_pool(game_state.waste, reusable_views)
+	for i in range(foundation_views.size()):
+		foundation_views[i].setup_with_pool(game_state.foundations[i], reusable_views)
+	for i in range(tableau_views.size()):
+		tableau_views[i].setup_with_pool(game_state.tableau[i], reusable_views)
 
-	for i in range(7):
-		tableau_views[i].setup(game_state.tableau[i])
+	for unused_view in reusable_views.values():
+		if is_instance_valid(unused_view):
+			unused_view.queue_free()
+
+
+func _select_cards(pile_view: PileView, card_index: int) -> void:
+	clear_selection()
+	var pile := pile_view.pile
+	if pile == null or card_index < 0 or card_index >= pile.cards.size():
+		return
+
+	match pile.type:
+		CardPile.Type.TABLEAU:
+			if not KlondikeRules.can_pick_up_tableau_sequence(pile, card_index):
+				return
+		CardPile.Type.WASTE, CardPile.Type.FOUNDATION:
+			if card_index != pile.cards.size() - 1 or not pile.cards[card_index].face_up:
+				return
+		_:
+			return
+
+	selected_source_pile = pile
+	selected_start_index = card_index
+	pile_view.outline_cards(card_index)
+
+
+func clear_selection() -> void:
+	selected_source_pile = null
+	selected_start_index = -1
+	for view in _all_pile_views():
+		view.clear_outlines()
 
 
 func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
 	match pile_view.pile.type:
 		CardPile.Type.STOCK:
 			_on_stock_clicked(pile_view)
-
 		CardPile.Type.WASTE:
-			_on_waste_clicked(pile_view)
-
+			_select_cards(pile_view, card_index)
 		CardPile.Type.TABLEAU:
-			var tableau_index := tableau_views.find(pile_view)
-			if tableau_index >= 0:
-				_on_tableau_card_clicked(pile_view, card_index, tableau_index)
-
+			_select_cards(pile_view, card_index)
 		CardPile.Type.FOUNDATION:
-			var foundation_index := foundation_views.find(pile_view)
-			if foundation_index >= 0:
-				_on_foundation_card_clicked(pile_view, card_index, foundation_index)
+			_select_cards(pile_view, card_index)
 
 
 func _on_stock_clicked(_pile_view: PileView) -> void:
-	draw_card_from_stock()
-
-	if not game_state.stock.is_empty():
-		stock_view.outline_cards(game_state.stock.cards.size() - 1)
-
-
-func _on_waste_clicked(_pile_view: PileView) -> void:
-	if game_state.waste.is_empty():
-		return
-
-	selected_cards.clear()
-	selected_cards.append(game_state.waste.get_top_card())
-
-	selected_source_pile = game_state.waste
-	_pile_view.outline_cards(game_state.waste.cards.size() - 1)
-
-	print("Ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
-
-
-func _on_tableau_card_clicked(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
-	print("Tableau clicked: ", tableau_index, ", Karte ", card_index)
-	var pile := game_state.tableau[tableau_index]
 	clear_selection()
+	if game_service.draw_from_stock():
+		refresh_board()
 
-	if not KlondikeRules.can_pick_up_tableau_sequence(pile, card_index):
-		print("Diese Kartenfolge darf nicht aufgenommen werden")
+
+func _on_waste_clicked(pile_view: PileView) -> void:
+	if not game_state.waste.is_empty():
+		_select_cards(pile_view, game_state.waste.cards.size() - 1)
+
+
+func _on_card_released(pile_view: PileView, card_index: int) -> void:
+	if selected_source_pile != pile_view.pile or selected_start_index != card_index:
 		return
-
-	for i in range(card_index, pile.cards.size()):
-		selected_cards.append(pile.cards[i])
-
-	selected_source_pile = pile
-	_pile_view.outline_cards(card_index)
-
-	print("Karte clicked: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name(), " Anzahl: ", selected_cards.size())
-	print("\n")
+	auto_move_selected_cards()
 
 
-func _on_foundation_card_clicked(_pile_view: PileView, card_index: int, foundation_index: int) -> void:
-	var pile := game_state.foundations[foundation_index]
-	clear_selection()
-
-	if pile.is_empty():
+func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
+	if data == null:
 		return
-
-	if card_index != pile.cards.size() - 1:
+	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
+	if not result.succeeded:
 		return
-
-	selected_cards.append(pile.get_top_card())
-	selected_source_pile = pile
-	_pile_view.outline_cards(card_index)
-
-	print("Foundation-Karte ausgewählt: ", selected_cards[0].get_suit_name(), " ", selected_cards[0].get_rank_name())
+	_after_successful_move(target_pile)
 
 
-func draw_card_from_stock() -> void:
-	print("Ziehe Karte vom Stock")
-	if game_state.stock.is_empty():
-		print("Stock ist leer, recyceln des Abwurfstapels")
-		recycle_waste_to_stock()
+func auto_move_selected_cards() -> void:
+	if selected_source_pile == null or selected_start_index < 0:
 		return
-
-	var card := game_state.stock.remove_top_card()
-
-	card.face_up = true
-	game_state.waste.add_card(card)
-	clear_selection()
-	stock_view.refresh()
-	waste_view.refresh()
-
-
-func recycle_waste_to_stock() -> void:
-	if game_state.waste.is_empty():
+	var target := game_service.find_automatic_target(selected_source_pile, selected_start_index)
+	if target == null:
+		clear_selection()
 		return
-
-	while not game_state.waste.is_empty():
-		var card := game_state.waste.remove_top_card()
-
-		card.face_up = false
-		game_state.stock.add_card(card)
-
-	stock_view.refresh()
-	waste_view.refresh()
+	var result := game_service.try_move(selected_source_pile, selected_start_index, target)
+	if result.succeeded:
+		_after_successful_move(target)
 
 
-func clear_selection() -> void:
-	selected_cards.clear()
-	selected_source_pile = null
-
-
-func _on_cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pile: CardPile) -> void:
-	if source_pile == null or source_pile == target_pile or cards.is_empty():
-		return
-
-	var move_is_valid := false
-
-	match target_pile.type:
-		CardPile.Type.TABLEAU:
-			move_is_valid = KlondikeRules.can_move_sequence_to_tableau(cards, target_pile)
-
-		CardPile.Type.FOUNDATION:
-			move_is_valid = (cards.size() == 1 and KlondikeRules.can_move_to_foundation(cards[0], target_pile))
-
-	if not move_is_valid:
-		return
-
-	for card in cards:
-		if not source_pile.cards.has(card):
-			return
-
-	for card in cards:
-		source_pile.cards.erase(card)
-		target_pile.add_card(card)
-
-	_flip_new_top_card(source_pile)
+func _after_successful_move(target_pile: CardPile) -> void:
 	clear_selection()
 	refresh_board()
-
 	if target_pile.type == CardPile.Type.FOUNDATION:
 		check_for_win()
 
 
-func _flip_new_top_card(pile: CardPile) -> void:
-	if pile.type != CardPile.Type.TABLEAU:
-		return
-
-	if pile.is_empty():
-		return
-
-	var top_card := pile.get_top_card()
-
-	if not top_card.face_up:
-		top_card.face_up = true
+func undo() -> void:
+	if game_service.undo():
+		win_animation.stop()
+		win_animation_started = false
+		clear_selection()
+		refresh_board()
 
 
-func _on_waste_card_released(_pile_view: PileView, card_index: int) -> void:
-	if game_state.waste.is_empty():
-		return
-
-	# Nur die oberste Waste-Karte darf bewegt werden.
-	if card_index != game_state.waste.cards.size() - 1:
-		return
-
-	var card := game_state.waste.get_top_card()
-
-	if selected_source_pile != game_state.waste \
-			or selected_cards.size() != 1 \
-			or selected_cards[0] != card:
-		return
-
-	auto_move_to(selected_cards, game_state.waste)
+func redo() -> void:
+	if game_service.redo():
+		clear_selection()
+		refresh_board()
+		check_for_win()
 
 
-func _on_tableau_card_released(_pile_view: PileView, card_index: int, tableau_index: int) -> void:
-	var pile := game_state.tableau[tableau_index]
-
-	if card_index < 0 or card_index >= pile.cards.size():
-		return
-
-	var first_card := pile.cards[card_index]
-
-	if selected_source_pile != pile \
-			or selected_cards.is_empty() \
-			or selected_cards[0] != first_card:
-		return
-
-	auto_move_to(selected_cards, pile)
+func save_game() -> Error:
+	return game_service.save_game()
 
 
-func _on_foundation_card_released(_pile_view: PileView, card_index: int, foundation_index: int) -> void:
-	var pile := game_state.foundations[foundation_index]
-
-	if card_index < 0 or card_index >= pile.cards.size():
-		return
-
-	var card := pile.cards[card_index]
-
-	if selected_source_pile != pile \
-			or selected_cards.size() != 1 \
-			or selected_cards[0] != card:
-		return
-
-	auto_move_to(selected_cards, pile)
-
-
-func auto_move_to(cards: Array[CardData], source_pile: CardPile) -> void:
-	if cards.is_empty():
-		return
-
-	if cards.size() == 1:
-		for foundation in game_state.foundations:
-			if KlondikeRules.can_move_to_foundation(cards[0], foundation):
-				_move_cards_automatically(cards, source_pile, foundation)
-				check_for_win()
-				return
-
-	for tableau in game_state.tableau:
-		if tableau == source_pile:
-			continue
-
-		if KlondikeRules.can_move_sequence_to_tableau(cards, tableau):
-			_move_cards_automatically(cards, source_pile, tableau)
-			return
-
-	clear_selection()
-
-
-func _move_cards_automatically(cards: Array[CardData], source_pile: CardPile, target_pile: CardPile) -> void:
-	for card in cards:
-		source_pile.cards.erase(card)
-		target_pile.add_card(card)
-
-	_flip_new_top_card(source_pile)
-	clear_selection()
-	refresh_board()
-
-
-func start_win_animation() -> void:
-	win_animation.play(game_state.foundations, foundation_views)
+func load_game() -> Error:
+	var error := game_service.load_game()
+	if error == OK:
+		win_animation.stop()
+		win_animation_started = false
+		clear_selection()
+		refresh_board()
+		check_for_win()
+	return error
 
 
 func check_for_win() -> void:
 	if win_animation_started or not is_game_won():
 		return
-
 	win_animation_started = true
-	start_win_animation()
+	win_animation.play(game_state.foundations, foundation_views)
 
 
 func is_game_won() -> bool:
 	for foundation in game_state.foundations:
-		if foundation.size() != 13:
+		if foundation.size() != GameState.MAX_RANK:
 			return false
-
 	return true
 
-# ============================================================================
-# Debug implementation for animation test. Only available in debug builds.
-# ============================================================================
+
+func _all_pile_views() -> Array[PileView]:
+	var result: Array[PileView] = [stock_view, waste_view]
+	result.append_array(foundation_views)
+	result.append_array(tableau_views)
+	return result
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not OS.is_debug_build():
+	if not event is InputEventKey or not event.pressed or event.echo:
 		return
-
-	if event is InputEventKey:
-		if event.keycode == KEY_W and event.pressed and not event.echo:
-			_start_test_win_animation()
+	if event.ctrl_pressed:
+		match event.keycode:
+			KEY_Z:
+				undo()
+			KEY_Y:
+				redo()
+			KEY_S:
+				save_game()
+			KEY_L:
+				load_game()
+			KEY_N:
+				new_game()
+	elif OS.is_debug_build() and event.keycode == KEY_W:
+		_start_test_win_animation()
 
 
 func _start_test_win_animation() -> void:
 	var test_foundations: Array[CardPile] = []
-
-	for i in range(4):
+	for i in range(GameState.FOUNDATION_COUNT):
 		test_foundations.append(CardPile.new(CardPile.Type.FOUNDATION))
-
 	var deck := game_state.create_deck()
-
 	for card in deck:
 		card.face_up = true
 		test_foundations[card.suit].add_card(card)
-
 	win_animation.play(test_foundations, foundation_views)

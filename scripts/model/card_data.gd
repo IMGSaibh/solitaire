@@ -49,3 +49,15 @@ func get_suit_name() -> String:
 			return "spades"
 		_:
 			return "unknown"
+
+
+func to_dict() -> Dictionary:
+	return { "suit": suit, "rank": rank, "face_up": face_up }
+
+
+static func from_dict(data: Dictionary) -> CardData:
+	var parsed_suit := int(data.get("suit", -1))
+	var parsed_rank := int(data.get("rank", 0))
+	if parsed_suit not in Suit.values() or parsed_rank < 1 or parsed_rank > 13:
+		return null
+	return CardData.new(parsed_suit as Suit, parsed_rank, bool(data.get("face_up", false)))

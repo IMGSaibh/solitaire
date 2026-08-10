@@ -1,4 +1,19 @@
 # Solitaire Klondike
+
+## Steuerung
+
+- Karte anklicken/ziehen: Karte oder gültige Tableau-Sequenz bewegen
+- `Ctrl+Z` / `Ctrl+Y`: Undo / Redo
+- `Ctrl+S` / `Ctrl+L`: Spiel speichern / laden
+- `Ctrl+N`: Neues Spiel
+- `W`: Gewinnanimation in Debug-Builds testen
+
+## Tests
+
+```powershell
+godot --headless --path . --script tests/test_runner.gd
+```
+
 ```bash
 res://
 │

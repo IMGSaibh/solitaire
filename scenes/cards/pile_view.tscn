@@ -6,8 +6,8 @@
 [node name="PileView" type="Control" unique_id=865190981]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 100.0
-offset_bottom = 140.0
+offset_right = 150.0
+offset_bottom = 200.0
 script = ExtResource("1_rpcvx")
 card_scene = ExtResource("2_nd2k2")
 
@@ -20,4 +20,3 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.1254902)
-script = ExtResource("1_rpcvx")

@@ -1,6 +1,8 @@
 class_name PileView
 extends Control
 
+const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
+
 @export var card_scene: PackedScene
 
 var pile: CardPile
@@ -9,7 +11,7 @@ var card_views: Array[CardView] = []
 signal card_clicked(pile_view: PileView, card_index: int)
 signal pile_clicked(pile_view: PileView)
 signal card_released(pile_view: PileView, card_index: int)
-signal cards_dropped(source_pile: CardPile, cards: Array[CardData], target_pile: CardPile)
+signal cards_dropped(data: CardDragData, target_pile: CardPile)
 
 
 func setup(pile_data: CardPile) -> void:
@@ -17,68 +19,132 @@ func setup(pile_data: CardPile) -> void:
 	refresh()
 
 
-func refresh() -> void:
-	_clear_cards()
+func setup_with_pool(pile_data: CardPile, reusable_views: Dictionary) -> void:
+	pile = pile_data
+	_refresh_from_pool(reusable_views, false)
 
+
+func refresh() -> void:
 	if pile == null:
+		_clear_cards()
 		return
 
+	var local_pool: Dictionary = {}
+	for card_view in card_views:
+		if card_view.card != null:
+			local_pool[card_view.card] = card_view
+	_refresh_from_pool(local_pool, true)
+
+
+func _refresh_from_pool(reusable_views: Dictionary, free_unused: bool) -> void:
+	var refreshed_views: Array[CardView] = []
 	for i in range(pile.cards.size()):
 		var card := pile.cards[i]
-
-		var card_view := card_scene.instantiate() as CardView
-		add_child(card_view)
-		card_views.append(card_view)
+		var card_view: CardView = reusable_views.get(card) as CardView
+		if card_view != null:
+			reusable_views.erase(card)
+			_adopt_card_view(card_view)
+		else:
+			card_view = _create_card_view()
 
 		card_view.setup(card)
-		card_view.set_drag_payload(_create_drag_payload(i))
-		card_view.card_clicked.connect(_on_card_view_clicked.bind(i))
-		card_view.card_released.connect(_on_card_released.bind(i))
-
+		card_view.set_drag_data(_create_drag_data(i))
 		_position_card(card_view, i)
+		refreshed_views.append(card_view)
+		move_child(card_view, get_child_count() - 1)
+
+	if free_unused:
+		for unused_view in reusable_views.values():
+			if is_instance_valid(unused_view):
+				unused_view.queue_free()
+		reusable_views.clear()
+	card_views = refreshed_views
+	_update_drop_area()
+
+
+func _create_card_view() -> CardView:
+	var card_view := card_scene.instantiate() as CardView
+	add_child(card_view)
+	_connect_card_view(card_view)
+	return card_view
+
+
+func _adopt_card_view(card_view: CardView) -> void:
+	var old_pile_view := card_view.get_parent() as PileView
+	if old_pile_view != self:
+		if old_pile_view != null:
+			old_pile_view.release_card_view(card_view)
+		card_view.reparent(self, false)
+	_connect_card_view(card_view)
+
+
+func _connect_card_view(card_view: CardView) -> void:
+	if not card_view.card_clicked.is_connected(_on_card_view_clicked):
+		card_view.card_clicked.connect(_on_card_view_clicked)
+	if not card_view.card_released.is_connected(_on_card_view_released):
+		card_view.card_released.connect(_on_card_view_released)
+	if not card_view.drag_finished.is_connected(_on_card_drag_finished):
+		card_view.drag_finished.connect(_on_card_drag_finished)
+
+
+func release_card_view(card_view: CardView) -> void:
+	card_views.erase(card_view)
+	_disconnect_card_view_signals(card_view)
+
+
+func _disconnect_card_view_signals(card_view: CardView) -> void:
+	if card_view.card_clicked.is_connected(_on_card_view_clicked):
+		card_view.card_clicked.disconnect(_on_card_view_clicked)
+	if card_view.card_released.is_connected(_on_card_view_released):
+		card_view.card_released.disconnect(_on_card_view_released)
+	if card_view.drag_finished.is_connected(_on_card_drag_finished):
+		card_view.drag_finished.disconnect(_on_card_drag_finished)
 
 
 func _clear_cards() -> void:
 	for card_view in card_views:
 		card_view.queue_free()
-
 	card_views.clear()
+	_update_drop_area()
 
 
 func _position_card(card_view: CardView, index: int) -> void:
-	match pile.type:
-		CardPile.Type.TABLEAU:
-			card_view.position = Vector2(0, index * 50)
-		_:
-			card_view.position = Vector2.ZERO
+	var y_position := index * CARD_THEME.tableau_offset if pile.type == CardPile.Type.TABLEAU else 0.0
+	card_view.position = Vector2(0.0, y_position)
 
 
-func _on_card_view_clicked(_card_view: CardView, card_index: int) -> void:
-	card_clicked.emit(self, card_index)
+func _update_drop_area() -> void:
+	var card_count := pile.cards.size() if pile != null else 0
+	var extra_height := 0.0
+	if pile != null and pile.type == CardPile.Type.TABLEAU and card_count > 1:
+		extra_height = (card_count - 1) * CARD_THEME.tableau_offset
+	size = Vector2(CARD_THEME.card_size.x, CARD_THEME.card_size.y + extra_height)
 
 
-func _on_card_released(_card_view: CardView, card_index: int) -> void:
-	card_released.emit(self, card_index)
+func _on_card_view_clicked(card_view: CardView) -> void:
+	var index := card_views.find(card_view)
+	if index >= 0:
+		card_clicked.emit(self, index)
 
 
-func _create_drag_payload(card_index: int) -> Variant:
+func _on_card_view_released(card_view: CardView) -> void:
+	var index := card_views.find(card_view)
+	if index >= 0:
+		card_released.emit(self, index)
+
+
+func _on_card_drag_finished(_card_view: CardView) -> void:
+	clear_outlines()
+
+
+func _create_drag_data(card_index: int) -> CardDragData:
 	if pile.type == CardPile.Type.STOCK:
 		return null
-
-	if card_index != pile.cards.size() - 1 \
-			and pile.type != CardPile.Type.TABLEAU:
+	if pile.type != CardPile.Type.TABLEAU and card_index != pile.cards.size() - 1:
 		return null
-
-	if pile.type == CardPile.Type.TABLEAU \
-			and not KlondikeRules.can_pick_up_tableau_sequence(pile, card_index):
+	if pile.type == CardPile.Type.TABLEAU and not KlondikeRules.can_pick_up_tableau_sequence(pile, card_index):
 		return null
-
-	var dragged_cards: Array[CardData] = []
-
-	for i in range(card_index, pile.cards.size()):
-		dragged_cards.append(pile.cards[i])
-
-	return { "source_pile": pile, "cards": dragged_cards }
+	return CardDragData.new(pile, card_index)
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
@@ -86,23 +152,10 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 
 func can_accept_drop(data: Variant) -> bool:
-	if not data is Dictionary:
+	if not data is CardDragData:
 		return false
-
-	var source_pile := data.get("source_pile") as CardPile
-	var cards: Array[CardData] = data.get("cards", [])
-
-	if source_pile == null or source_pile == pile or cards.is_empty():
-		return false
-
-	match pile.type:
-		CardPile.Type.TABLEAU:
-			return KlondikeRules.can_move_sequence_to_tableau(cards, pile)
-
-		CardPile.Type.FOUNDATION:
-			return cards.size() == 1 and KlondikeRules.can_move_to_foundation(cards[0], pile)
-		_:
-			return false
+	var typed_data := data as CardDragData
+	return KlondikeRules.can_move(typed_data.source_pile, typed_data.start_index, pile)
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
@@ -110,28 +163,19 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 
 
 func accept_drop(data: Variant) -> void:
-	var source_pile := data.get("source_pile") as CardPile
-	var cards: Array[CardData] = data.get("cards", [])
-
-	cards_dropped.emit(source_pile, cards, pile)
+	if not data is CardDragData or not can_accept_drop(data):
+		return
+	cards_dropped.emit(data as CardDragData, pile)
 
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			pile_clicked.emit(self)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		pile_clicked.emit(self)
 
 
 func outline_cards(start_index: int) -> void:
-	for i in range(start_index, card_views.size()):
+	for i in range(maxi(start_index, 0), card_views.size()):
 		card_views[i].set_outline_enabled(true)
-
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton \
-			and event.button_index == MOUSE_BUTTON_LEFT \
-			and not event.pressed:
-		clear_outlines()
 
 
 func clear_outlines() -> void:
