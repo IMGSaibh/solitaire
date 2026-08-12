@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://cuxyxq70dg81t"]
+[gd_scene format=3 uid="uid://cuxyxq70dg81t"]
 
 [ext_resource type="Script" uid="uid://bpef124avlp48" path="res://scripts/controllers/game_controller.gd" id="1_e64el"]
 [ext_resource type="PackedScene" uid="uid://qsmsyhxi86cu" path="res://scenes/cards/pile_view.tscn" id="2_ma5rq"]
 [ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
-[ext_resource type="Script" path="res://scripts/views/board_view.gd" id="5_board"]
+[ext_resource type="Script" uid="uid://m7ay6nctxdix" path="res://scripts/views/board_view.gd" id="5_board"]
 
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
@@ -36,95 +36,96 @@ script = ExtResource("5_board")
 [node name="Stock" parent="Board" unique_id=865190981 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 100.0
-offset_top = 310.0
+offset_top = 330.0
 offset_right = 250.0
-offset_bottom = 510.0
+offset_bottom = 540.0
 
 [node name="Waste" parent="Board" unique_id=251156000 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 100.0
 offset_right = 250.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Foundation1" parent="Board" unique_id=1073673478 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 1500.0
 offset_top = 100.0
 offset_right = 1650.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Foundation2" parent="Board" unique_id=1712468677 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 1500.0
-offset_top = 310.0
+offset_top = 330.0
 offset_right = 1650.0
-offset_bottom = 510.0
+offset_bottom = 540.0
 
 [node name="Foundation3" parent="Board" unique_id=138997799 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 1500.0
-offset_top = 520.0
+offset_top = 560.0
 offset_right = 1650.0
-offset_bottom = 720.0
+offset_bottom = 770.0
 
 [node name="Foundation4" parent="Board" unique_id=321497126 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 1500.0
-offset_top = 730.0
+offset_top = 790.0
 offset_right = 1650.0
-offset_bottom = 930.0
+offset_bottom = 1000.0
 
 [node name="Tableau1" parent="Board" unique_id=1966071216 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 300.0
 offset_top = 100.0
 offset_right = 450.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Tableau2" parent="Board" unique_id=225362752 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 460.0
 offset_top = 100.0
 offset_right = 610.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Tableau3" parent="Board" unique_id=1849009518 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 620.0
 offset_top = 100.0
 offset_right = 770.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Tableau4" parent="Board" unique_id=1989901720 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 780.0
 offset_top = 100.0
 offset_right = 930.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Tableau5" parent="Board" unique_id=1537111591 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 940.0
 offset_top = 100.0
 offset_right = 1090.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Tableau6" parent="Board" unique_id=1575284875 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 1100.0
 offset_top = 100.0
 offset_right = 1250.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="Tableau7" parent="Board" unique_id=138300963 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
 offset_left = 1260.0
 offset_top = 100.0
 offset_right = 1410.0
-offset_bottom = 300.0
+offset_bottom = 310.0
 
 [node name="WinAnimationLayer" type="Control" parent="." unique_id=1354470684]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

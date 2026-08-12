@@ -1,12 +1,8 @@
-[gd_resource type="Resource" script_class="SolitaireCardTheme" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="SolitaireCardTheme" format=3 uid="uid://b4f4qhbcds26"]
 
-[ext_resource type="Script" path="res://scripts/resources/solitaire_card_theme.gd" id="1_theme"]
-[ext_resource type="Texture2D" path="res://assets/cards/backs/back.png" id="2_back"]
+[ext_resource type="Script" uid="uid://bqtfgvpyd71a4" path="res://scripts/resources/solitaire_card_theme.gd" id="1_theme"]
+[ext_resource type="Texture2D" uid="uid://du52tipkmf8k6" path="res://assets/cards/backs/back.png" id="2_back"]
 
 [resource]
 script = ExtResource("1_theme")
 back_texture = ExtResource("2_back")
-card_size = Vector2(150, 200)
-tableau_offset = 50.0
-outline_color = Color(1, 0, 0, 1)
-outline_width = 2.0

@@ -14,10 +14,11 @@ shader_parameter/outline_width = 2.000000095
 layout_mode = 3
 anchors_preset = 0
 offset_right = 150.0
-offset_bottom = 200.0
+offset_bottom = 210.0
 script = ExtResource("1_rfc1g")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1220745914]
+texture_filter = 2
 material = SubResource("ShaderMaterial_iq0x8")
 layout_mode = 1
 anchors_preset = 15
