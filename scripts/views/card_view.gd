@@ -67,14 +67,17 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	var preview := Control.new()
 	for i in range(dragged_cards.size()):
 		var preview_card := TextureRect.new()
-		preview_card.texture = CARD_THEME.get_face_texture(dragged_cards[i])
+		# Ignore the source texture's native pixel size before assigning it.
+		# Otherwise high-resolution card assets enlarge the drag preview.
+		preview_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		preview_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		preview_card.custom_minimum_size = Vector2.ZERO
 		preview_card.position = Vector2(-at_position.x, i * CARD_THEME.tableau_offset - at_position.y)
 		preview_card.size = CARD_THEME.card_size
+		preview_card.texture = CARD_THEME.get_face_texture(dragged_cards[i])
 		preview_card.material = texture_rect.material.duplicate()
 		var preview_material := preview_card.material as ShaderMaterial
 		preview_material.set_shader_parameter("outline_enabled", true)
-		preview_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		preview_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		preview_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		preview.add_child(preview_card)
 
