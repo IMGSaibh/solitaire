@@ -6,7 +6,7 @@ extends Resource
 @export var card_size := Vector2(150.0, 210.0)
 @export var tableau_offset := 50.0
 @export var outline_color := Color.RED
-@export_range(0.0, 3.0) var outline_width := 2.0
+@export_range(0.0, 6.0, 0.5) var outline_width := 6.0
 
 
 func get_face_texture(card: CardData) -> Texture2D:
