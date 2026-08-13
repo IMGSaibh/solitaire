@@ -19,6 +19,7 @@ var win_animation_started := false
 	$Board/Tableau7,
 ]
 @onready var win_animation: WinAnimation = $WinAnimationLayer
+@onready var button_ui: ButtonUi = $ButtonUi
 
 
 func _ready() -> void:
@@ -29,6 +30,8 @@ func _ready() -> void:
 
 
 func _connect_signals_to_views() -> void:
+	button_ui.new_game_requested.connect(new_game)
+	button_ui.auto_finish_requested.connect(_on_auto_finish_requested)
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
@@ -72,6 +75,16 @@ func refresh_board() -> void:
 	for unused_view in reusable_views.values():
 		if is_instance_valid(unused_view):
 			unused_view.queue_free()
+
+	button_ui.set_auto_finish_available(game_service.can_auto_finish() and not is_game_won())
+
+
+func _on_auto_finish_requested() -> void:
+	if not game_service.auto_finish():
+		return
+	clear_selection()
+	refresh_board()
+	check_for_win()
 
 
 func _select_cards(pile_view: PileView, card_index: int) -> void:

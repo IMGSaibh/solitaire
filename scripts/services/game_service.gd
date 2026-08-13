@@ -130,3 +130,39 @@ func _flip_new_top_tableau_card(pile: CardPile) -> void:
 	var top_card := pile.get_top_card()
 	if not top_card.face_up:
 		top_card.face_up = true
+
+
+func can_auto_finish() -> bool:
+	return state.are_all_cards_faced_up()
+
+
+func auto_finish() -> bool:
+	if not can_auto_finish():
+		return false
+
+	var before := state.create_snapshot()
+	var cards_by_suit: Array[Array] = []
+	for suit in range(GameState.FOUNDATION_COUNT):
+		cards_by_suit.append([])
+
+	for pile in [state.stock, state.waste]:
+		for card in pile.cards:
+			cards_by_suit[card.suit].append(card)
+		pile.cards.clear()
+	for pile in state.tableau:
+		for card in pile.cards:
+			cards_by_suit[card.suit].append(card)
+		pile.cards.clear()
+	for pile in state.foundations:
+		for card in pile.cards:
+			cards_by_suit[card.suit].append(card)
+		pile.cards.clear()
+
+	for suit in range(GameState.FOUNDATION_COUNT):
+		cards_by_suit[suit].sort_custom(func(a: CardData, b: CardData) -> bool: return a.rank < b.rank)
+		for card in cards_by_suit[suit]:
+			card.face_up = true
+			state.foundations[suit].add_card(card)
+
+	_record_change(before)
+	return true

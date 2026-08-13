@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://c33wgd1k2q3ch"]
+
+[ext_resource type="Script" uid="uid://dkfwp7m8qsp6b" path="res://scripts/views/button_ui.gd" id="1_button_ui"]
+
+[sub_resource type="StyleBoxFlat" id="StyleNormal"]
+bg_color = Color(0.027, 0.255, 0.137, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.86, 0.72, 0.3, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleHover"]
+bg_color = Color(0.04, 0.36, 0.19, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.85, 0.4, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="ButtonUi" type="Control" unique_id=1780051424]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_button_ui")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=2101349556]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -92.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="Buttons" type="HBoxContainer" parent="MarginContainer" unique_id=1771541776]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="NewGameButton" type="Button" parent="MarginContainer/Buttons" unique_id=470814360]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 60)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleNormal")
+theme_override_styles/pressed = SubResource("StyleHover")
+theme_override_styles/hover = SubResource("StyleHover")
+text = "Neues Spiel"
+
+[node name="AutoFinishButton" type="Button" parent="MarginContainer/Buttons" unique_id=529421263]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 60)
+layout_mode = 2
+tooltip_text = "Alle Karten automatisch ablegen"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleNormal")
+theme_override_styles/pressed = SubResource("StyleHover")
+theme_override_styles/hover = SubResource("StyleHover")
+text = "Aufräumen"

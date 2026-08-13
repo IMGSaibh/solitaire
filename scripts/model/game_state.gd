@@ -138,3 +138,11 @@ func _deserialize_cards(data: Variant) -> Variant:
 			return null
 		result.append(card)
 	return result
+
+
+func are_all_cards_faced_up() -> bool:
+	for pile in tableau:
+		for card in pile.cards:
+			if not card.face_up:
+				return false
+	return true
