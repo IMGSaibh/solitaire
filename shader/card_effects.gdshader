@@ -8,7 +8,8 @@ uniform float shine_line_width : hint_range(0.0, 0.2) = 0.09;
 uniform float shine_brightness = 3.0;
 uniform float shine_rotation_degrees : hint_range(-90.0, 90.0) = 30.0;
 uniform float shine_distortion : hint_range(1.0, 2.0) = 1.8;
-uniform float shine_speed = 0.7;
+uniform float shine_speed : hint_range(0.1, 2.0, 0.05) = 0.7;
+uniform float shine_interval : hint_range(1.0, 20.0, 0.5) = 6.0;
 uniform float shine_position : hint_range(0.0, 1.0) = 0.0;
 uniform float shine_position_min = 0.25;
 uniform float shine_position_max = 0.5;
@@ -37,7 +38,13 @@ float get_shine_amount(vec2 uv) {
 
 	vec2 rotated_uv = rotate_uv(uv, vec2(0.5), shine_rotation_degrees);
 	float remapped_position = mix(shine_position_min, shine_position_max, shine_position);
-	float remapped_time = mix(-2.0, 2.0, fract(TIME * shine_speed + remapped_position));
+	float sweep_duration = 1.0 / shine_speed;
+	float cycle_duration = max(shine_interval, sweep_duration);
+	float cycle_time = mod(TIME + remapped_position * cycle_duration, cycle_duration);
+	if (cycle_time > sweep_duration) {
+		return 0.0;
+	}
+	float remapped_time = mix(-2.0, 2.0, cycle_time / sweep_duration);
 
 	float line = abs(rotated_uv.x + remapped_time);
 	line = sqrt(max(gradient_to_edge * line, 0.0));
