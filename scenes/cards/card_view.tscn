@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://le3riownw630" path="res://scripts/views/card_view.gd" id="1_rfc1g"]
 [ext_resource type="Texture2D" uid="uid://bj5grfvmjf6oj" path="res://assets/cards/faces/clubs_01.png" id="2_d56wy"]
-[ext_resource type="Shader" uid="uid://wirrs015eyfx" path="res://shader/card_outline.gdshader" id="2_qusmm"]
+[ext_resource type="Shader" uid="uid://wirrs015eyfx" path="res://shader/card_effects.gdshader" id="2_qusmm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iq0x8"]
 shader = ExtResource("2_qusmm")
