@@ -2,7 +2,27 @@
 
 [ext_resource type="Script" uid="uid://bqtfgvpyd71a4" path="res://scripts/resources/solitaire_card_theme.gd" id="1_theme"]
 [ext_resource type="Texture2D" uid="uid://du52tipkmf8k6" path="res://assets/cards/backs/back.png" id="2_back"]
+[ext_resource type="Shader" uid="uid://wirrs015eyfx" path="res://shader/card_effects.gdshader" id="3_effects"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_card_effects"]
+shader = ExtResource("3_effects")
+shader_parameter/shine_enabled = true
+shader_parameter/shine_line_smoothness = 0.045
+shader_parameter/shine_line_width = 0.09
+shader_parameter/shine_brightness = 3.0
+shader_parameter/shine_rotation_degrees = 70.0000076
+shader_parameter/shine_distortion = 2.0
+shader_parameter/shine_speed = 0.3999999910592
+shader_parameter/shine_interval = 10.0
+shader_parameter/shine_position = 0.0
+shader_parameter/shine_position_min = 0.25
+shader_parameter/shine_position_max = 0.5
+shader_parameter/shine_alpha = 1.0
+shader_parameter/outline_color = Color(1, 0, 0, 1)
+shader_parameter/outline_enabled = false
+shader_parameter/outline_width = 6.0
 
 [resource]
 script = ExtResource("1_theme")
 back_texture = ExtResource("2_back")
+card_material = SubResource("ShaderMaterial_card_effects")

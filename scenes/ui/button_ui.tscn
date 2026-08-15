@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://c33wgd1k2q3ch"]
+[gd_scene format=3 uid="uid://dmwsgvyndrwci"]
 
 [ext_resource type="Script" uid="uid://dkfwp7m8qsp6b" path="res://scripts/views/button_ui.gd" id="1_button_ui"]
 
@@ -26,7 +26,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="ButtonUi" type="Control" unique_id=1780051424]
+[node name="ButtonUi" type="Control" unique_id=1284328503]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,7 +36,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_button_ui")
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=2101349556]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=227055820]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -50,12 +50,12 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 20
 
-[node name="Buttons" type="HBoxContainer" parent="MarginContainer" unique_id=1771541776]
+[node name="Buttons" type="HBoxContainer" parent="MarginContainer" unique_id=288903392]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="MarginContainer/Buttons" unique_id=470814360]
+[node name="NewGameButton" type="Button" parent="MarginContainer/Buttons" unique_id=357356877]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 60)
 layout_mode = 2
@@ -68,7 +68,7 @@ theme_override_styles/pressed = SubResource("StyleHover")
 theme_override_styles/hover = SubResource("StyleHover")
 text = "Neues Spiel"
 
-[node name="AutoFinishButton" type="Button" parent="MarginContainer/Buttons" unique_id=529421263]
+[node name="AutoFinishButton" type="Button" parent="MarginContainer/Buttons" unique_id=564169350]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 60)
 layout_mode = 2

@@ -1,26 +1,7 @@
 [gd_scene format=3 uid="uid://dpmravhpclsd8"]
 
 [ext_resource type="Script" uid="uid://le3riownw630" path="res://scripts/views/card_view.gd" id="1_rfc1g"]
-[ext_resource type="Shader" uid="uid://wirrs015eyfx" path="res://shader/card_effects.gdshader" id="2_qusmm"]
 [ext_resource type="Texture2D" uid="uid://du52tipkmf8k6" path="res://assets/cards/backs/back.png" id="3_qusmm"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_iq0x8"]
-shader = ExtResource("2_qusmm")
-shader_parameter/shine_enabled = true
-shader_parameter/shine_line_smoothness = 0.045
-shader_parameter/shine_line_width = 0.09
-shader_parameter/shine_brightness = 3.0
-shader_parameter/shine_rotation_degrees = 70.0000076
-shader_parameter/shine_distortion = 2.0
-shader_parameter/shine_speed = 0.3999999910592
-shader_parameter/shine_interval = 10.0
-shader_parameter/shine_position = 0.0
-shader_parameter/shine_position_min = 0.25
-shader_parameter/shine_position_max = 0.5
-shader_parameter/shine_alpha = 1.0
-shader_parameter/outline_color = Color(1, 0, 0, 1)
-shader_parameter/outline_enabled = true
-shader_parameter/outline_width = 20.0
 
 [node name="CardView" type="Control" unique_id=1586208210]
 layout_mode = 3
@@ -31,7 +12,6 @@ script = ExtResource("1_rfc1g")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1220745914]
 texture_filter = 2
-material = SubResource("ShaderMaterial_iq0x8")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

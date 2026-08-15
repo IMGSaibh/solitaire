@@ -16,10 +16,10 @@ signal drag_finished(card_view: CardView)
 
 
 func _ready() -> void:
-	texture_rect.material = texture_rect.material.duplicate()
-	var shader_material := texture_rect.material as ShaderMaterial
-	shader_material.set_shader_parameter("outline_color", CARD_THEME.outline_color)
-	shader_material.set_shader_parameter("outline_width", CARD_THEME.outline_width)
+	if CARD_THEME.card_material == null:
+		push_error("Card theme has no shader material")
+		return
+	texture_rect.material = CARD_THEME.card_material.duplicate()
 
 
 func _notification(what: int) -> void:

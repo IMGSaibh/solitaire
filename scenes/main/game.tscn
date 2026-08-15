@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
 [ext_resource type="Script" uid="uid://m7ay6nctxdix" path="res://scripts/views/board_view.gd" id="5_board"]
-[ext_resource type="PackedScene" uid="uid://dmwsgvyndrwci" path="res://scenes/ui/buttonUi.tscn" id="6_button_ui"]
+[ext_resource type="PackedScene" uid="uid://dmwsgvyndrwci" path="res://scenes/ui/button_ui.tscn" id="6_button_ui"]
 
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
