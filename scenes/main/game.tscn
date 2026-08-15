@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cuxyxq70dg81t"]
 
 [ext_resource type="Script" uid="uid://bpef124avlp48" path="res://scripts/controllers/game_controller.gd" id="1_e64el"]
+[ext_resource type="Texture2D" uid="uid://bo55whdhqt524" path="res://assets/backgrounds/background.png" id="2_0rn35"]
 [ext_resource type="PackedScene" uid="uid://qsmsyhxi86cu" path="res://scenes/cards/pile_view.tscn" id="2_ma5rq"]
 [ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
@@ -16,14 +17,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_e64el")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1064098010]
+[node name="Background" type="TextureRect" parent="." unique_id=761056128]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.043137256, 0.41960785, 0.22745098, 1)
+mouse_filter = 2
+texture = ExtResource("2_0rn35")
 
 [node name="Board" type="Control" parent="." unique_id=118589808]
 layout_mode = 1
