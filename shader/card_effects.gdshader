@@ -1,9 +1,65 @@
 shader_type canvas_item;
+render_mode blend_premul_alpha;
+
+// Shine effect
+uniform bool shine_enabled = true;
+uniform float shine_line_smoothness : hint_range(0.0, 0.1) = 0.045;
+uniform float shine_line_width : hint_range(0.0, 0.2) = 0.09;
+uniform float shine_brightness = 3.0;
+uniform float shine_rotation_degrees : hint_range(-90.0, 90.0) = 30.0;
+uniform float shine_distortion : hint_range(1.0, 2.0) = 1.8;
+uniform float shine_speed = 0.7;
+uniform float shine_position : hint_range(0.0, 1.0) = 0.0;
+uniform float shine_position_min = 0.25;
+uniform float shine_position_max = 0.5;
+uniform float shine_alpha : hint_range(0.0, 1.0) = 1.0;
 
 // Outline effect
 uniform vec4 outline_color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
 uniform bool outline_enabled = false;
 uniform float outline_width : hint_range(0.0, 6.0) = 1.0;
+
+
+vec2 rotate_uv(vec2 uv, vec2 center, float rotation_degrees) {
+	float angle = radians(rotation_degrees);
+	mat2 rotation = mat2(
+		vec2(cos(angle), -sin(angle)),
+		vec2(sin(angle), cos(angle))
+	);
+	return rotation * (uv - center) + center;
+}
+
+
+float get_shine_amount(vec2 uv) {
+	vec2 centered_uv = uv - vec2(0.5);
+	float gradient_to_edge = max(abs(centered_uv.x), abs(centered_uv.y));
+	gradient_to_edge = 1.0 - gradient_to_edge * shine_distortion;
+
+	vec2 rotated_uv = rotate_uv(uv, vec2(0.5), shine_rotation_degrees);
+	float remapped_position = mix(shine_position_min, shine_position_max, shine_position);
+	float remapped_time = mix(-2.0, 2.0, fract(TIME * shine_speed + remapped_position));
+
+	float line = abs(rotated_uv.x + remapped_time);
+	line = sqrt(max(gradient_to_edge * line, 0.0));
+
+	float line_smoothness = clamp(shine_line_smoothness, 0.001, 1.0);
+	float offset_plus = shine_line_width + line_smoothness;
+	float offset_minus = shine_line_width - line_smoothness;
+	float remapped_line = (line - offset_plus) / (offset_minus - offset_plus);
+
+	return clamp(remapped_line * shine_brightness, 0.0, shine_alpha);
+}
+
+
+vec4 apply_shine(vec4 color, vec2 uv) {
+	if (!shine_enabled || color.a <= 0.0) {
+		return color;
+	}
+
+	float shine = get_shine_amount(uv);
+	color.rgb = mix(color.rgb, vec3(1.0), shine);
+	return color;
+}
 
 
 vec4 apply_outline(vec4 color, float surrounding_alpha) {
@@ -33,7 +89,9 @@ void fragment() {
 	surrounding_alpha = max(surrounding_alpha, texture(TEXTURE, UV - vec2(outline_offset.x, outline_offset.y)).a);
 
 	// Card effects are applied here in their visual order.
+	color = apply_shine(color, UV);
 	color = apply_outline(color, surrounding_alpha);
 
-	COLOR = color;
+	// blend_premul_alpha expects RGB to already be multiplied by alpha.
+	COLOR = vec4(color.rgb * color.a, color.a);
 }
