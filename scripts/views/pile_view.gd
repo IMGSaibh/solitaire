@@ -5,6 +5,8 @@ const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
 
 @export var card_scene: PackedScene
 
+@onready var pile_texture: TextureRect = $PileTexture
+
 var pile: CardPile
 var card_views: Array[CardView] = []
 
@@ -22,6 +24,31 @@ func setup(pile_data: CardPile) -> void:
 func setup_with_pool(pile_data: CardPile, reusable_views: Dictionary) -> void:
 	pile = pile_data
 	_refresh_from_pool(reusable_views, false)
+	_update_pile_texture()
+
+
+func _update_pile_texture() -> void:
+	if pile == null:
+		pile_texture.hide()
+		return
+
+	match pile.type:
+		CardPile.Type.FOUNDATION:
+			pile_texture.texture = preload("res://assets/cards/foundation/foundation-01.png")
+			pile_texture.show()
+
+		CardPile.Type.TABLEAU:
+			pile_texture.texture = preload("res://assets/cards/tableau/tableau-01.png")
+			pile_texture.show()
+		CardPile.Type.STOCK:
+			pile_texture.texture = preload("res://assets/cards/stock/stock-01.png")
+			pile_texture.show()
+		CardPile.Type.WASTE:
+			pile_texture.texture = preload("res://assets/cards/waste/waste-01.png")
+			pile_texture.show()
+
+		_:
+			pile_texture.hide()
 
 
 func refresh() -> void:
@@ -29,7 +56,7 @@ func refresh() -> void:
 		_clear_cards()
 		return
 
-	var local_pool: Dictionary = {}
+	var local_pool: Dictionary = { }
 	for card_view in card_views:
 		if card_view.card != null:
 			local_pool[card_view.card] = card_view

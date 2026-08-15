@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dej00dr71w005" path="res://scripts/views/pile_view.gd" id="1_rpcvx"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="2_nd2k2"]
+[ext_resource type="Texture2D" uid="uid://ci3bhy4t2cp72" path="res://assets/cards/foundation/foundation-01.png" id="3_7iint"]
 
 [node name="PileView" type="Control" unique_id=865190981]
 layout_mode = 3
@@ -11,10 +12,14 @@ offset_bottom = 210.0
 script = ExtResource("1_rpcvx")
 card_scene = ExtResource("2_nd2k2")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1987914899]
-texture_filter = 2
-layout_mode = 0
-offset_right = 150.0
-offset_bottom = 210.0
+[node name="PileTexture" type="TextureRect" parent="." unique_id=27841790]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-color = Color(1, 1, 1, 0.1254902)
+texture = ExtResource("3_7iint")
+expand_mode = 1
