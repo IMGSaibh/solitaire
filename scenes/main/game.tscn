@@ -26,6 +26,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("2_0rn35")
+expand_mode = 1
+stretch_mode = 0
 
 [node name="Board" type="Control" parent="." unique_id=118589808]
 layout_mode = 1
