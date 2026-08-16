@@ -2,6 +2,7 @@ class_name CardView
 extends Control
 
 const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
+const AUTO_MOVE_DURATION := 0.22
 
 @onready var texture_rect: TextureRect = $TextureRect
 
@@ -9,6 +10,7 @@ var card: CardData
 var drag_data: CardDragData
 var drag_started := false
 var hidden_drag_views: Array[CardView] = []
+var move_tween: Tween
 
 signal card_clicked(card_view: CardView)
 signal card_released(card_view: CardView)
@@ -29,10 +31,38 @@ func _notification(what: int) -> void:
 
 
 func setup(card_data: CardData) -> void:
+	_reset_move_animation()
 	card = card_data
 	visible = true
 	set_outline_enabled(false)
 	update_visual()
+
+
+func animate_move_from(start_global_position: Vector2, order: int = 0) -> void:
+	var target_global_position := global_position
+	global_position = start_global_position
+	z_index = 100 + order
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	move_tween = create_tween()
+	move_tween.set_trans(Tween.TRANS_CUBIC)
+	move_tween.set_ease(Tween.EASE_OUT)
+	move_tween.tween_property(self, "global_position", target_global_position, AUTO_MOVE_DURATION)
+	move_tween.finished.connect(_finish_move_animation)
+
+
+func _reset_move_animation() -> void:
+	if move_tween != null and move_tween.is_valid():
+		move_tween.kill()
+	move_tween = null
+	z_index = 0
+	mouse_filter = Control.MOUSE_FILTER_STOP
+
+
+func _finish_move_animation() -> void:
+	move_tween = null
+	z_index = 0
+	mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 func set_drag_data(data: CardDragData) -> void:

@@ -141,7 +141,7 @@ func _on_waste_clicked(pile_view: PileView) -> void:
 func _on_card_released(pile_view: PileView, card_index: int) -> void:
 	if selected_source_pile != pile_view.pile or selected_start_index != card_index:
 		return
-	auto_move_selected_cards()
+	auto_move_selected_cards(pile_view)
 
 
 func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
@@ -153,23 +153,38 @@ func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
 	_after_successful_move(target_pile)
 
 
-func auto_move_selected_cards() -> void:
+func auto_move_selected_cards(source_view: PileView) -> void:
 	if selected_source_pile == null or selected_start_index < 0:
 		return
 	var target := game_service.find_automatic_target(selected_source_pile, selected_start_index)
 	if target == null:
 		clear_selection()
 		return
+	var start_positions: Dictionary = {}
+	for i in range(selected_start_index, source_view.card_views.size()):
+		var card_view := source_view.card_views[i]
+		start_positions[card_view] = card_view.global_position
 	var result := game_service.try_move(selected_source_pile, selected_start_index, target)
 	if result.succeeded:
-		_after_successful_move(target)
+		_after_successful_move(target, start_positions)
 
 
-func _after_successful_move(target_pile: CardPile) -> void:
+func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary = {}) -> void:
 	clear_selection()
 	refresh_board()
+	_animate_moved_cards(animation_starts)
 	if target_pile.type == CardPile.Type.FOUNDATION:
 		check_for_win()
+
+
+func _animate_moved_cards(start_positions: Dictionary) -> void:
+	var order := 0
+	for view in start_positions:
+		var card_view := view as CardView
+		if not is_instance_valid(card_view):
+			continue
+		card_view.animate_move_from(start_positions[card_view] as Vector2, order)
+		order += 1
 
 
 func undo() -> void:
