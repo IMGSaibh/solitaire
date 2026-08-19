@@ -134,6 +134,7 @@ layout_mode = 1
 
 [node name="MoveCardAudio" type="AudioStreamPlayer" parent="." unique_id=756968813]
 stream = ExtResource("7_move_card")
+volume_db = -4.445
 max_polyphony = 4
 bus = &"SFX"
 
