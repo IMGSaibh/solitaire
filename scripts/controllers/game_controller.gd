@@ -20,6 +20,7 @@ var win_animation_started := false
 ]
 @onready var win_animation: WinAnimation = $WinAnimationLayer
 @onready var button_ui: ButtonUi = $ButtonUi
+@onready var move_card_audio: AudioStreamPlayer = $MoveCardAudio
 
 
 func _ready() -> void:
@@ -84,6 +85,7 @@ func _on_auto_finish_requested() -> void:
 		return
 	clear_selection()
 	refresh_board()
+	_play_move_sound()
 	check_for_win()
 
 
@@ -160,7 +162,7 @@ func auto_move_selected_cards(source_view: PileView) -> void:
 	if target == null:
 		clear_selection()
 		return
-	var start_positions: Dictionary = {}
+	var start_positions: Dictionary = { }
 	for i in range(selected_start_index, source_view.card_views.size()):
 		var card_view := source_view.card_views[i]
 		start_positions[card_view] = card_view.global_position
@@ -169,22 +171,32 @@ func auto_move_selected_cards(source_view: PileView) -> void:
 		_after_successful_move(target, start_positions)
 
 
-func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary = {}) -> void:
+func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary = { }) -> void:
 	clear_selection()
 	refresh_board()
+	_play_move_sound()
 	_animate_moved_cards(animation_starts)
 	if target_pile.type == CardPile.Type.FOUNDATION:
 		check_for_win()
 
 
+func _play_move_sound() -> void:
+	move_card_audio.play()
+
+
 func _animate_moved_cards(start_positions: Dictionary) -> void:
-	var order := 0
+	var moved_views: Array[CardView] = []
 	for view in start_positions:
 		var card_view := view as CardView
-		if not is_instance_valid(card_view):
-			continue
+		if is_instance_valid(card_view):
+			moved_views.append(card_view)
+
+	if moved_views.is_empty():
+		return
+
+	for order in range(moved_views.size()):
+		var card_view := moved_views[order]
 		card_view.animate_move_from(start_positions[card_view] as Vector2, order)
-		order += 1
 
 
 func undo() -> void:
