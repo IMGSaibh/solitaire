@@ -2,7 +2,7 @@ class_name CardView
 extends Control
 
 const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
-const AUTO_MOVE_DURATION := 0.22
+const AUTO_MOVE_DURATION := 0.20
 
 @onready var texture_rect: TextureRect = $TextureRect
 
@@ -111,10 +111,7 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 		preview_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		preview.add_child(preview_card)
 
-	preview.size = Vector2(
-		CARD_THEME.card_size.x,
-		CARD_THEME.card_size.y + CARD_THEME.tableau_offset * (dragged_cards.size() - 1),
-	)
+	preview.size = Vector2(CARD_THEME.card_size.x, CARD_THEME.card_size.y + CARD_THEME.tableau_offset * (dragged_cards.size() - 1))
 	set_drag_preview(preview)
 	_hide_dragged_cards(dragged_cards)
 	return drag_data

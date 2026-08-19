@@ -5,6 +5,8 @@ var game_state: GameState
 var selected_source_pile: CardPile
 var selected_start_index := -1
 var win_animation_started := false
+var auto_finish_running := false
+var auto_finish_run_id := 0
 
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
@@ -52,6 +54,7 @@ func _connect_signals_to_views() -> void:
 
 
 func new_game() -> void:
+	_cancel_auto_finish()
 	win_animation.stop()
 	win_animation_started = false
 	game_service.new_game()
@@ -77,16 +80,54 @@ func refresh_board() -> void:
 		if is_instance_valid(unused_view):
 			unused_view.queue_free()
 
-	button_ui.set_auto_finish_available(game_service.can_auto_finish() and not is_game_won())
+	button_ui.set_auto_finish_available(
+		game_service.can_auto_finish() and not is_game_won() and not auto_finish_running,
+	)
 
 
 func _on_auto_finish_requested() -> void:
-	if not game_service.auto_finish():
+	if auto_finish_running or not game_service.can_auto_finish():
 		return
+	auto_finish_running = true
+	auto_finish_run_id += 1
+	var run_id := auto_finish_run_id
 	clear_selection()
 	refresh_board()
-	_play_move_sound()
+
+	while run_id == auto_finish_run_id and _auto_finish_next_card():
+		await get_tree().create_timer(CardView.AUTO_MOVE_DURATION).timeout
+
+	if run_id != auto_finish_run_id:
+		return
+	auto_finish_running = false
+	refresh_board()
 	check_for_win()
+
+
+func _auto_finish_next_card() -> bool:
+	var source_views: Array[PileView] = [waste_view]
+	source_views.append_array(tableau_views)
+
+	for source_view in source_views:
+		var source := source_view.pile
+		if source == null or source.is_empty():
+			continue
+		var card_index := source.cards.size() - 1
+		for foundation in game_state.foundations:
+			if not KlondikeRules.can_move(source, card_index, foundation):
+				continue
+			var card_view := source_view.card_views[card_index]
+			var start_positions: Dictionary = {card_view: card_view.global_position}
+			var result := game_service.try_move(source, card_index, foundation)
+			if result.succeeded:
+				_after_successful_move(foundation, start_positions)
+				return true
+	return false
+
+
+func _cancel_auto_finish() -> void:
+	auto_finish_run_id += 1
+	auto_finish_running = false
 
 
 func _select_cards(pile_view: PileView, card_index: int) -> void:
@@ -118,6 +159,8 @@ func clear_selection() -> void:
 
 
 func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
+	if auto_finish_running:
+		return
 	match pile_view.pile.type:
 		CardPile.Type.STOCK:
 			_on_stock_clicked(pile_view)
@@ -130,24 +173,30 @@ func _on_card_clicked(pile_view: PileView, card_index: int) -> void:
 
 
 func _on_stock_clicked(_pile_view: PileView) -> void:
+	if auto_finish_running:
+		return
 	clear_selection()
 	if game_service.draw_from_stock():
 		refresh_board()
 
 
 func _on_waste_clicked(pile_view: PileView) -> void:
+	if auto_finish_running:
+		return
 	if not game_state.waste.is_empty():
 		_select_cards(pile_view, game_state.waste.cards.size() - 1)
 
 
 func _on_card_released(pile_view: PileView, card_index: int) -> void:
+	if auto_finish_running:
+		return
 	if selected_source_pile != pile_view.pile or selected_start_index != card_index:
 		return
 	auto_move_selected_cards(pile_view)
 
 
 func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
-	if data == null:
+	if auto_finish_running or data == null:
 		return
 	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
 	if not result.succeeded:
@@ -200,6 +249,7 @@ func _animate_moved_cards(start_positions: Dictionary) -> void:
 
 
 func undo() -> void:
+	_cancel_auto_finish()
 	if game_service.undo():
 		win_animation.stop()
 		win_animation_started = false
@@ -208,6 +258,7 @@ func undo() -> void:
 
 
 func redo() -> void:
+	_cancel_auto_finish()
 	if game_service.redo():
 		clear_selection()
 		refresh_board()
@@ -219,6 +270,7 @@ func save_game() -> Error:
 
 
 func load_game() -> Error:
+	_cancel_auto_finish()
 	var error := game_service.load_game()
 	if error == OK:
 		win_animation.stop()
