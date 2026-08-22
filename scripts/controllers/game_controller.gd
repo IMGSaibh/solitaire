@@ -35,6 +35,9 @@ func _ready() -> void:
 func _connect_signals_to_views() -> void:
 	button_ui.new_game_requested.connect(new_game)
 	button_ui.auto_finish_requested.connect(_on_auto_finish_requested)
+	button_ui.undo_requested.connect(undo)
+	button_ui.save_requested.connect(save_game)
+	button_ui.load_requested.connect(load_game)
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)

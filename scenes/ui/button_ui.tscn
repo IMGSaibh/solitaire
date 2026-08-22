@@ -59,6 +59,7 @@ alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 60)
 layout_mode = 2
+tooltip_text = "Neues Spiel (Ctrl+N)"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -81,3 +82,45 @@ theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
 theme_override_styles/hover = SubResource("StyleHover")
 text = "Aufräumen"
+
+[node name="UndoButton" type="Button" parent="MarginContainer/Buttons" unique_id=838123469]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+tooltip_text = "Letzten Zug rückgängig machen (Ctrl+Z)"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleNormal")
+theme_override_styles/pressed = SubResource("StyleHover")
+theme_override_styles/hover = SubResource("StyleHover")
+text = "Undo"
+
+[node name="SaveButton" type="Button" parent="MarginContainer/Buttons" unique_id=1513659935]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+tooltip_text = "Spiel speichern (Ctrl+S)"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleNormal")
+theme_override_styles/pressed = SubResource("StyleHover")
+theme_override_styles/hover = SubResource("StyleHover")
+text = "Speichern"
+
+[node name="LoadButton" type="Button" parent="MarginContainer/Buttons" unique_id=455230044]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 60)
+layout_mode = 2
+tooltip_text = "Spiel laden (Ctrl+L)"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleNormal")
+theme_override_styles/pressed = SubResource("StyleHover")
+theme_override_styles/hover = SubResource("StyleHover")
+text = "Laden"
