@@ -257,14 +257,6 @@ func undo() -> void:
 		refresh_board()
 
 
-func redo() -> void:
-	_cancel_auto_finish()
-	if game_service.redo():
-		clear_selection()
-		refresh_board()
-		check_for_win()
-
-
 func save_game() -> Error:
 	return game_service.save_game()
 
@@ -309,8 +301,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		match event.keycode:
 			KEY_Z:
 				undo()
-			KEY_Y:
-				redo()
 			KEY_S:
 				save_game()
 			KEY_L:

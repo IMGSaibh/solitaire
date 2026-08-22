@@ -5,7 +5,6 @@ const DEFAULT_SAVE_PATH := "user://savegame.json"
 
 var state: GameState
 var undo_stack: Array[Dictionary] = []
-var redo_stack: Array[Dictionary] = []
 
 
 func _init(p_state: GameState = null) -> void:
@@ -72,24 +71,10 @@ func find_automatic_target(source: CardPile, start_index: int) -> CardPile:
 func undo() -> bool:
 	if undo_stack.is_empty():
 		return false
-	var current := state.create_snapshot()
 	var previous: Dictionary = undo_stack.pop_back()
 	if not state.restore_snapshot(previous):
 		undo_stack.append(previous)
 		return false
-	redo_stack.append(current)
-	return true
-
-
-func redo() -> bool:
-	if redo_stack.is_empty():
-		return false
-	var current := state.create_snapshot()
-	var next: Dictionary = redo_stack.pop_back()
-	if not state.restore_snapshot(next):
-		redo_stack.append(next)
-		return false
-	undo_stack.append(current)
 	return true
 
 
@@ -116,12 +101,10 @@ func load_game(path: String = DEFAULT_SAVE_PATH) -> Error:
 
 func clear_history() -> void:
 	undo_stack.clear()
-	redo_stack.clear()
 
 
 func _record_change(before: Dictionary) -> void:
 	undo_stack.append(before)
-	redo_stack.clear()
 
 
 func _flip_new_top_tableau_card(pile: CardPile) -> void:

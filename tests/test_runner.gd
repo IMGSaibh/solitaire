@@ -87,8 +87,6 @@ func _test_atomic_move_and_history() -> void:
 	_expect(service.undo(), "Move can be undone")
 	_expect(state.tableau[0].size() == 2 and state.tableau[1].is_empty(), "Undo restores piles")
 	_expect(not state.tableau[0].cards[0].face_up, "Undo restores face-up state")
-	_expect(service.redo(), "Move can be redone")
-	_expect(state.tableau[0].size() == 1 and state.tableau[1].size() == 1, "Redo reapplies move")
 
 
 func _test_stock_recycling() -> void:

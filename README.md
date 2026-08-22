@@ -21,7 +21,7 @@ Dieses Projekt setzt klassisches Klondike Solitaire in Godot um. Spiellogik, Reg
 - Automatische Zielauswahl beim Anklicken einer Karte
 - Automatisches Aufdecken der nächsten Tableau-Karte
 - Stock erneut aus dem Waste aufbauen
-- Undo und Redo
+- Undo
 - Spielstand speichern und laden
 - Automatisches Beenden, sobald alle Karten aufgedeckt sind
 - Responsive Board-Skalierung für unterschiedliche Fenstergrößen
@@ -52,7 +52,6 @@ godot --path .
 |---|---|
 | Karte oder Sequenz bewegen | Anklicken oder ziehen |
 | Zug rückgängig machen | `Ctrl` + `Z` |
-| Zug wiederholen | `Ctrl` + `Y` |
 | Spiel speichern | `Ctrl` + `S` |
 | Spiel laden | `Ctrl` + `L` |
 | Neues Spiel starten | `Ctrl` + `N` |
@@ -76,7 +75,7 @@ Die Verantwortlichkeiten sind klar aufgeteilt:
 
 - **Views** verarbeiten Eingaben und stellen Karten sowie Stapel dar.
 - **GameController** koordiniert Auswahl, Spielzüge, UI und Siegprüfung.
-- **GameService** verändert den Zustand atomar und verwaltet Undo, Redo sowie Spielstände.
+- **GameService** verändert den Zustand atomar und verwaltet Undo sowie Spielstände.
 - **GameState** enthält Karten und Stapel ohne Abhängigkeit von der Oberfläche.
 - **KlondikeRules** validiert Spielzüge unabhängig von der Darstellung.
 
@@ -92,7 +91,7 @@ Parameter wie Farbe, Stärke, Geschwindigkeit und Shine-Intervall können über 
 
 ## Tests
 
-Die Tests laufen headless und prüfen unter anderem Tableau- und Foundation-Regeln, atomare Spielzüge, Undo/Redo, Stock-Recycling, Speichern/Laden und die Gewinnanimation.
+Die Tests laufen headless und prüfen unter anderem Tableau- und Foundation-Regeln, atomare Spielzüge, Undo, Stock-Recycling, Speichern/Laden und die Gewinnanimation.
 
 ```powershell
 godot --headless --path . --script tests/test_runner.gd
