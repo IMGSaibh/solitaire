@@ -82,7 +82,7 @@ func save_game(path: String = DEFAULT_SAVE_PATH) -> Error:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
-	file.store_string(JSON.stringify(state.create_snapshot()))
+	file.store_string(JSON.stringify(state.create_snapshot(), "\t"))
 	return OK
 
 
