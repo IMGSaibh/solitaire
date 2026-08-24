@@ -7,6 +7,7 @@ const MAX_RANK := 13
 
 var stock: CardPile
 var waste: CardPile
+var score := 0
 
 var foundations: Array[CardPile] = []
 var tableau: Array[CardPile] = []
@@ -69,6 +70,7 @@ func _fill_stock(deck: Array[CardData]) -> void:
 
 func new_game() -> void:
 	_clear_piles()
+	score = 0
 
 	var deck := create_deck()
 	deck.shuffle()
@@ -79,6 +81,7 @@ func new_game() -> void:
 
 func create_snapshot() -> Dictionary:
 	return {
+		"score": score,
 		"stock": _serialize_pile(stock),
 		"waste": _serialize_pile(waste),
 		"foundations": foundations.map(_serialize_pile),
@@ -87,6 +90,7 @@ func create_snapshot() -> Dictionary:
 
 
 func restore_snapshot(snapshot: Dictionary) -> bool:
+	var parsed_score := int(snapshot.get("score", 0))
 	var stock_cards: Variant = _deserialize_cards(snapshot.get("stock", []))
 	var waste_cards: Variant = _deserialize_cards(snapshot.get("waste", []))
 	var foundation_data := snapshot.get("foundations", []) as Array
@@ -112,6 +116,7 @@ func restore_snapshot(snapshot: Dictionary) -> bool:
 
 	stock.cards.assign(stock_cards)
 	waste.cards.assign(waste_cards)
+	score = maxi(parsed_score, 0)
 	for i in range(FOUNDATION_COUNT):
 		foundations[i].cards.assign(parsed_foundations[i])
 	for i in range(TABLEAU_COUNT):

@@ -2,6 +2,7 @@ class_name GameService
 extends RefCounted
 
 const DEFAULT_SAVE_PATH := "user://savegame.json"
+const FOUNDATION_CARD_SCORE := 10
 
 var state: GameState
 var undo_stack: Array[Dictionary] = []
@@ -23,6 +24,8 @@ func try_move(source: CardPile, start_index: int, target: CardPile) -> MoveResul
 	var before := state.create_snapshot()
 	var moved_cards := source.remove_cards_from(start_index)
 	target.add_cards(moved_cards)
+	if target.type == CardPile.Type.FOUNDATION:
+		state.score += moved_cards.size() * FOUNDATION_CARD_SCORE
 	_flip_new_top_tableau_card(source)
 	_record_change(before)
 	return MoveResult.success(moved_cards)

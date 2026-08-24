@@ -11,6 +11,7 @@ func _run() -> void:
 	_test_tableau_rules()
 	_test_foundation_rules()
 	_test_atomic_move_and_history()
+	_test_foundation_score_and_undo()
 	_test_stock_recycling()
 	_test_save_and_load()
 	await _test_win_animation()
@@ -87,6 +88,20 @@ func _test_atomic_move_and_history() -> void:
 	_expect(service.undo(), "Move can be undone")
 	_expect(state.tableau[0].size() == 2 and state.tableau[1].is_empty(), "Undo restores piles")
 	_expect(not state.tableau[0].cards[0].face_up, "Undo restores face-up state")
+
+
+func _test_foundation_score_and_undo() -> void:
+	var state := GameState.new()
+	var service := GameService.new(state)
+	var source := state.tableau[0]
+	var foundation := state.foundations[CardData.Suit.CLUBS]
+	source.add_card(_card(CardData.Suit.CLUBS, 1))
+
+	var result := service.try_move(source, 0, foundation)
+	_expect(result.succeeded, "Card can be moved to foundation for scoring")
+	_expect(state.score == 10, "Foundation move awards 10 points")
+	_expect(service.undo(), "Scoring foundation move can be undone")
+	_expect(state.score == 0, "Undo removes foundation points")
 
 
 func _test_stock_recycling() -> void:

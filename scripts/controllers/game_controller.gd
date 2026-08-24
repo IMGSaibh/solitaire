@@ -23,6 +23,7 @@ var auto_finish_run_id := 0
 @onready var win_animation: WinAnimation = $WinAnimationLayer
 @onready var button_ui: ButtonUi = $ButtonUi
 @onready var move_card_audio: AudioStreamPlayer = $MoveCardAudio
+@onready var score_label: Label = $ScorePanel/ScoreLabel
 
 
 func _ready() -> void:
@@ -66,6 +67,7 @@ func new_game() -> void:
 
 
 func refresh_board() -> void:
+	score_label.text = "Punkte: %d" % game_state.score
 	var reusable_views: Dictionary = { }
 	for view in _all_pile_views():
 		for card_view in view.card_views:
