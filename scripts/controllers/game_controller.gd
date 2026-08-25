@@ -85,9 +85,7 @@ func refresh_board() -> void:
 		if is_instance_valid(unused_view):
 			unused_view.queue_free()
 
-	button_ui.set_auto_finish_available(
-		game_service.can_auto_finish() and not is_game_won() and not auto_finish_running,
-	)
+	button_ui.set_auto_finish_available(game_service.can_auto_finish() and not is_game_won() and not auto_finish_running)
 
 
 func _on_auto_finish_requested() -> void:
@@ -122,7 +120,7 @@ func _auto_finish_next_card() -> bool:
 			if not KlondikeRules.can_move(source, card_index, foundation):
 				continue
 			var card_view := source_view.card_views[card_index]
-			var start_positions: Dictionary = {card_view: card_view.global_position}
+			var start_positions: Dictionary = { card_view: card_view.global_position }
 			var result := game_service.try_move(source, card_index, foundation)
 			if result.succeeded:
 				_after_successful_move(foundation, start_positions)
@@ -231,7 +229,24 @@ func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary 
 	_play_move_sound()
 	_animate_moved_cards(animation_starts)
 	if target_pile.type == CardPile.Type.FOUNDATION:
+		_show_foundation_score(target_pile, GameService.FOUNDATION_CARD_SCORE)
 		check_for_win()
+	if target_pile.type == CardPile.Type.TABLEAU:
+		_show_tableau_score(target_pile, GameService.TABLEAU_CARD_SCORE)
+
+
+func _show_foundation_score(foundation: CardPile, points: int) -> void:
+	var foundation_index := game_state.foundations.find(foundation)
+	if foundation_index < 0 or foundation_index >= foundation_views.size():
+		return
+	foundation_views[foundation_index].show_score_popup(points)
+
+
+func _show_tableau_score(tableau: CardPile, points: int) -> void:
+	var tableau_index := game_state.tableau.find(tableau)
+	if tableau_index < 0 or tableau_index >= tableau_views.size():
+		return
+	tableau_views[tableau_index].show_score_popup(points)
 
 
 func _play_move_sound() -> void:

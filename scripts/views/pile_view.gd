@@ -2,6 +2,9 @@ class_name PileView
 extends Control
 
 const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
+const SCORE_POPUP_DURATION := 0.75
+const SCORE_POPUP_RISE := 70.0
+const SCORE_POPUP_FONT_SIZE := 32
 
 @export var card_scene: PackedScene
 
@@ -208,3 +211,34 @@ func outline_cards(start_index: int) -> void:
 func clear_outlines() -> void:
 	for card_view in card_views:
 		card_view.set_outline_enabled(false)
+
+
+func show_score_popup(points: int) -> void:
+	if points <= 0:
+		return
+
+	var popup := Label.new()
+	popup.text = "+%d" % points
+	popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	popup.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	popup.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	popup.z_index = 100
+	popup.add_theme_font_size_override("font_size", SCORE_POPUP_FONT_SIZE)
+	popup.add_theme_color_override("font_color", Color(1.0, 0.86, 0.25))
+	popup.add_theme_color_override("font_outline_color", Color(0.12, 0.08, 0.02, 0.9))
+	popup.add_theme_constant_override("outline_size", 6)
+	add_child(popup)
+
+	popup.position = Vector2(0.0, CARD_THEME.card_size.y * 0.35)
+	popup.size = Vector2(CARD_THEME.card_size.x, 48.0)
+	popup.pivot_offset = popup.size * 0.5
+	popup.scale = Vector2(0.75, 0.75)
+
+	var tween := popup.create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(popup, "position:y", popup.position.y - SCORE_POPUP_RISE, SCORE_POPUP_DURATION)
+	tween.tween_property(popup, "scale", Vector2.ONE, 0.2)
+	tween.tween_property(popup, "modulate:a", 0.0, SCORE_POPUP_DURATION).set_delay(0.25)
+	tween.chain().tween_callback(popup.queue_free)

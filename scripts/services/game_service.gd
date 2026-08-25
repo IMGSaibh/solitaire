@@ -3,6 +3,7 @@ extends RefCounted
 
 const DEFAULT_SAVE_PATH := "user://savegame.json"
 const FOUNDATION_CARD_SCORE := 10
+const TABLEAU_CARD_SCORE := 5
 
 var state: GameState
 var undo_stack: Array[Dictionary] = []
@@ -26,6 +27,8 @@ func try_move(source: CardPile, start_index: int, target: CardPile) -> MoveResul
 	target.add_cards(moved_cards)
 	if target.type == CardPile.Type.FOUNDATION:
 		state.score += moved_cards.size() * FOUNDATION_CARD_SCORE
+	if target.type == CardPile.Type.TABLEAU:
+		state.score += moved_cards.size() * TABLEAU_CARD_SCORE
 	_flip_new_top_tableau_card(source)
 	_record_change(before)
 	return MoveResult.success(moved_cards)
@@ -145,7 +148,10 @@ func auto_finish() -> bool:
 		pile.cards.clear()
 
 	for suit in range(GameState.FOUNDATION_COUNT):
-		cards_by_suit[suit].sort_custom(func(a: CardData, b: CardData) -> bool: return a.rank < b.rank)
+		cards_by_suit[suit].sort_custom(
+			func(a: CardData, b: CardData) -> bool:
+				return a.rank < b.rank,
+		)
 		for card in cards_by_suit[suit]:
 			card.face_up = true
 			state.foundations[suit].add_card(card)
