@@ -233,6 +233,7 @@ func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary 
 		check_for_win()
 	if target_pile.type == CardPile.Type.TABLEAU:
 		_show_tableau_score(target_pile, GameService.TABLEAU_CARD_SCORE)
+		check_for_win()
 
 
 func _show_foundation_score(foundation: CardPile, points: int) -> void:

@@ -4,7 +4,7 @@ extends Control
 const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
 const SCORE_POPUP_DURATION := 0.75
 const SCORE_POPUP_RISE := 70.0
-const SCORE_POPUP_FONT_SIZE := 32
+const SCORE_POPUP_FONT_SIZE := 52
 
 @export var card_scene: PackedScene
 
@@ -224,8 +224,8 @@ func show_score_popup(points: int) -> void:
 	popup.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	popup.z_index = 100
 	popup.add_theme_font_size_override("font_size", SCORE_POPUP_FONT_SIZE)
-	popup.add_theme_color_override("font_color", Color(1.0, 0.86, 0.25))
-	popup.add_theme_color_override("font_outline_color", Color(0.12, 0.08, 0.02, 0.9))
+	popup.add_theme_color_override("font_color", Color(0.0, 1.0, 0.0))
+	# popup.add_theme_color_override("font_outline_color", Color(0.12, 0.08, 0.02, 0.9))
 	popup.add_theme_constant_override("outline_size", 6)
 	add_child(popup)
 
