@@ -95,6 +95,9 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 
 	drag_started = true
 	var preview := Control.new()
+	# Drag previews are displayed outside the scaled board hierarchy, so they do
+	# not inherit the scale used by BoardView in fullscreen or resized windows.
+	preview.scale = get_global_transform().get_scale()
 	for i in range(dragged_cards.size()):
 		var preview_card := TextureRect.new()
 		# Ignore the source texture's native pixel size before assigning it.
