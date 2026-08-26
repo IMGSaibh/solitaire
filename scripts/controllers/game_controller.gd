@@ -123,7 +123,7 @@ func _auto_finish_next_card() -> bool:
 			var start_positions: Dictionary = { card_view: card_view.global_position }
 			var result := game_service.try_move(source, card_index, foundation)
 			if result.succeeded:
-				_after_successful_move(foundation, start_positions)
+				_after_successful_move(foundation, start_positions, result.points_awarded)
 				return true
 	return false
 
@@ -204,7 +204,7 @@ func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
 	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
 	if not result.succeeded:
 		return
-	_after_successful_move(target_pile)
+	_after_successful_move(target_pile, {}, result.points_awarded)
 
 
 func auto_move_selected_cards(source_view: PileView) -> void:
@@ -220,23 +220,29 @@ func auto_move_selected_cards(source_view: PileView) -> void:
 		start_positions[card_view] = card_view.global_position
 	var result := game_service.try_move(selected_source_pile, selected_start_index, target)
 	if result.succeeded:
-		_after_successful_move(target, start_positions)
+		_after_successful_move(target, start_positions, result.points_awarded)
 
 
-func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary = { }) -> void:
+func _after_successful_move(
+	target_pile: CardPile,
+	animation_starts: Dictionary = { },
+	points_awarded: int = 0,
+) -> void:
 	clear_selection()
 	refresh_board()
 	_play_move_sound()
 	_animate_moved_cards(animation_starts)
 	if target_pile.type == CardPile.Type.FOUNDATION:
-		_show_foundation_score(target_pile, GameService.FOUNDATION_CARD_SCORE)
+		_show_foundation_score(target_pile, points_awarded)
 		check_for_win()
 	if target_pile.type == CardPile.Type.TABLEAU:
-		_show_tableau_score(target_pile, GameService.TABLEAU_CARD_SCORE)
+		_show_tableau_score(target_pile, points_awarded)
 		check_for_win()
 
 
 func _show_foundation_score(foundation: CardPile, points: int) -> void:
+	if points <= 0:
+		return
 	var foundation_index := game_state.foundations.find(foundation)
 	if foundation_index < 0 or foundation_index >= foundation_views.size():
 		return
@@ -244,6 +250,8 @@ func _show_foundation_score(foundation: CardPile, points: int) -> void:
 
 
 func _show_tableau_score(tableau: CardPile, points: int) -> void:
+	if points <= 0:
+		return
 	var tableau_index := game_state.tableau.find(tableau)
 	if tableau_index < 0 or tableau_index >= tableau_views.size():
 		return

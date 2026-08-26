@@ -2,19 +2,17 @@ class_name MoveResult
 extends RefCounted
 
 var succeeded: bool
-var reason: String
-var moved_cards: Array[CardData]
+var points_awarded: int
 
 
-func _init(p_succeeded: bool, p_reason: String = "", p_moved_cards: Array[CardData] = []) -> void:
+func _init(p_succeeded: bool, p_points_awarded: int = 0) -> void:
 	succeeded = p_succeeded
-	reason = p_reason
-	moved_cards = p_moved_cards
+	points_awarded = p_points_awarded
 
 
-static func success(cards: Array[CardData]) -> MoveResult:
-	return MoveResult.new(true, "", cards)
+static func success(points: int = 0) -> MoveResult:
+	return MoveResult.new(true, points)
 
 
-static func failure(message: String) -> MoveResult:
-	return MoveResult.new(false, message)
+static func failure() -> MoveResult:
+	return MoveResult.new(false)

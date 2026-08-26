@@ -12,6 +12,7 @@ func _run() -> void:
 	_test_foundation_rules()
 	_test_atomic_move_and_history()
 	_test_foundation_score_and_undo()
+	_test_card_scores_only_once()
 	_test_stock_recycling()
 	_test_save_and_load()
 	await _test_win_animation()
@@ -102,6 +103,74 @@ func _test_foundation_score_and_undo() -> void:
 	_expect(state.score == 10, "Foundation move awards 10 points")
 	_expect(service.undo(), "Scoring foundation move can be undone")
 	_expect(state.score == 0, "Undo removes foundation points")
+
+
+func _test_card_scores_only_once() -> void:
+	var state := GameState.new()
+	var service := GameService.new(state)
+	var first_tableau := state.tableau[0]
+	var second_tableau := state.tableau[1]
+	var third_tableau := state.tableau[2]
+	var black_king := _card(CardData.Suit.CLUBS, 13)
+	var red_queen := _card(CardData.Suit.HEARTS, 12)
+	first_tableau.add_card(red_queen)
+	second_tableau.add_card(black_king)
+
+	var first_move := service.try_move(first_tableau, 0, second_tableau)
+	_expect(first_move.succeeded, "Card can move to another tableau")
+	_expect(first_move.points_awarded == 5 and state.score == 5, "First tableau move awards points")
+
+	third_tableau.add_card(_card(CardData.Suit.SPADES, 13))
+	var second_move := service.try_move(second_tableau, 1, third_tableau)
+	_expect(second_move.succeeded, "Card can move between tableaus again")
+	_expect(second_move.points_awarded == 0 and state.score == 5, "Card does not score a second time")
+
+	var snapshot := state.create_snapshot()
+	_expect(state.restore_snapshot(snapshot), "Scoring state survives snapshot restore")
+	_expect(
+		state.tableau[2].get_top_card().tableau_points_awarded,
+		"Card remains marked as tableau-scored after restore",
+	)
+
+	var foundation_state := GameState.new()
+	var foundation_service := GameService.new(foundation_state)
+	var ace := _card(CardData.Suit.CLUBS, 1)
+	var red_two := _card(CardData.Suit.DIAMONDS, 2)
+	foundation_state.tableau[0].add_card(ace)
+	foundation_state.tableau[1].add_card(red_two)
+	var to_foundation := foundation_service.try_move(
+		foundation_state.tableau[0],
+		0,
+		foundation_state.foundations[CardData.Suit.CLUBS],
+	)
+	var back_to_tableau := foundation_service.try_move(
+		foundation_state.foundations[CardData.Suit.CLUBS],
+		0,
+		foundation_state.tableau[1],
+	)
+	var back_to_foundation := foundation_service.try_move(
+		foundation_state.tableau[1],
+		1,
+		foundation_state.foundations[CardData.Suit.CLUBS],
+	)
+	_expect(to_foundation.points_awarded == 10, "Card receives its foundation points")
+	_expect(back_to_tableau.points_awarded == 5, "Card can separately receive its tableau points")
+	_expect(
+		back_to_foundation.points_awarded == 0 and foundation_state.score == 15,
+		"Card does not receive its foundation points twice",
+	)
+
+	var stack_state := GameState.new()
+	var stack_service := GameService.new(stack_state)
+	var red_king := _card(CardData.Suit.HEARTS, 13)
+	var black_queen := _card(CardData.Suit.CLUBS, 12)
+	var red_jack := _card(CardData.Suit.DIAMONDS, 11)
+	stack_state.tableau[0].add_cards([black_queen, red_jack])
+	stack_state.tableau[1].add_card(red_king)
+	var stack_move := stack_service.try_move(stack_state.tableau[0], 0, stack_state.tableau[1])
+	_expect(stack_move.points_awarded == 5, "A moved tableau sequence awards points only once")
+	_expect(black_queen.tableau_points_awarded, "The attached card is marked as tableau-scored")
+	_expect(not red_jack.tableau_points_awarded, "Cards hanging below it are not marked as scored")
 
 
 func _test_stock_recycling() -> void:

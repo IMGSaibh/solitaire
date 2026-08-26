@@ -20,18 +20,23 @@ func new_game() -> void:
 
 func try_move(source: CardPile, start_index: int, target: CardPile) -> MoveResult:
 	if not KlondikeRules.can_move(source, start_index, target):
-		return MoveResult.failure("Move is not allowed")
+		return MoveResult.failure()
 
 	var before := state.create_snapshot()
 	var moved_cards := source.remove_cards_from(start_index)
 	target.add_cards(moved_cards)
-	if target.type == CardPile.Type.FOUNDATION:
-		state.score += moved_cards.size() * FOUNDATION_CARD_SCORE
-	if target.type == CardPile.Type.TABLEAU:
-		state.score += moved_cards.size() * TABLEAU_CARD_SCORE
+	var moved_card: CardData = moved_cards.front()
+	var points_awarded := 0
+	if target.type == CardPile.Type.FOUNDATION and not moved_card.foundation_points_awarded:
+		moved_card.foundation_points_awarded = true
+		points_awarded = FOUNDATION_CARD_SCORE
+	elif target.type == CardPile.Type.TABLEAU and not moved_card.tableau_points_awarded:
+		moved_card.tableau_points_awarded = true
+		points_awarded = TABLEAU_CARD_SCORE
+	state.score += points_awarded
 	_flip_new_top_tableau_card(source)
 	_record_change(before)
-	return MoveResult.success(moved_cards)
+	return MoveResult.success(points_awarded)
 
 
 func draw_from_stock() -> bool:
