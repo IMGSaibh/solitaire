@@ -2,7 +2,7 @@ class_name PileView
 extends Control
 
 const CARD_THEME: SolitaireCardTheme = preload("res://data/card_theme.tres")
-const SCORE_POPUP_DURATION := 0.75
+const SCORE_POPUP_DURATION := 1.75
 const SCORE_POPUP_RISE := 70.0
 const SCORE_POPUP_FONT_SIZE := 52
 
