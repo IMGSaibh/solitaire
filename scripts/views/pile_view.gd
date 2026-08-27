@@ -19,14 +19,9 @@ signal card_released(pile_view: PileView, card_index: int)
 signal cards_dropped(data: CardDragData, target_pile: CardPile)
 
 
-func setup(pile_data: CardPile) -> void:
+func setup(pile_data: CardPile, reusable_views: Dictionary) -> void:
 	pile = pile_data
-	refresh()
-
-
-func setup_with_pool(pile_data: CardPile, reusable_views: Dictionary) -> void:
-	pile = pile_data
-	_refresh_from_pool(reusable_views, false)
+	_refresh(reusable_views, false)
 	_update_pile_texture()
 
 
@@ -54,19 +49,7 @@ func _update_pile_texture() -> void:
 			pile_texture.hide()
 
 
-func refresh() -> void:
-	if pile == null:
-		_clear_cards()
-		return
-
-	var local_pool: Dictionary = { }
-	for card_view in card_views:
-		if card_view.card != null:
-			local_pool[card_view.card] = card_view
-	_refresh_from_pool(local_pool, true)
-
-
-func _refresh_from_pool(reusable_views: Dictionary, free_unused: bool) -> void:
+func _refresh(reusable_views: Dictionary, free_unused: bool) -> void:
 	var refreshed_views: Array[CardView] = []
 	for i in range(pile.cards.size()):
 		var card := pile.cards[i]
@@ -129,13 +112,6 @@ func _disconnect_card_view_signals(card_view: CardView) -> void:
 		card_view.card_released.disconnect(_on_card_view_released)
 	if card_view.drag_finished.is_connected(_on_card_drag_finished):
 		card_view.drag_finished.disconnect(_on_card_drag_finished)
-
-
-func _clear_cards() -> void:
-	for card_view in card_views:
-		card_view.queue_free()
-	card_views.clear()
-	_update_drop_area()
 
 
 func _position_card(card_view: CardView, index: int) -> void:
@@ -225,7 +201,6 @@ func show_score_popup(points: int) -> void:
 	popup.z_index = 100
 	popup.add_theme_font_size_override("font_size", SCORE_POPUP_FONT_SIZE)
 	popup.add_theme_color_override("font_color", Color(0.0, 1.0, 0.0))
-	# popup.add_theme_color_override("font_outline_color", Color(0.12, 0.08, 0.02, 0.9))
 	popup.add_theme_constant_override("outline_size", 6)
 	add_child(popup)
 

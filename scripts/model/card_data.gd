@@ -15,13 +15,7 @@ var tableau_points_awarded: bool = false
 var foundation_points_awarded: bool = false
 
 
-func _init(
-	p_suit: Suit,
-	p_rank: int,
-	p_face_up: bool = false,
-	p_tableau_points_awarded: bool = false,
-	p_foundation_points_awarded: bool = false,
-) -> void:
+func _init(p_suit: Suit, p_rank: int, p_face_up: bool = false, p_tableau_points_awarded: bool = false, p_foundation_points_awarded: bool = false) -> void:
 	suit = p_suit
 	rank = p_rank
 	face_up = p_face_up
@@ -31,20 +25,6 @@ func _init(
 
 func is_red() -> bool:
 	return suit == Suit.HEARTS or suit == Suit.DIAMONDS
-
-
-func get_rank_name() -> String:
-	match rank:
-		1:
-			return "A"
-		11:
-			return "J"
-		12:
-			return "Q"
-		13:
-			return "K"
-		_:
-			return str(rank)
 
 
 func get_suit_name() -> String:

@@ -44,8 +44,6 @@ func _connect_signals_to_views() -> void:
 	waste_view.pile_clicked.connect(_on_waste_clicked)
 	waste_view.card_clicked.connect(_on_card_clicked)
 	waste_view.card_released.connect(_on_card_released)
-	waste_view.cards_dropped.connect(_on_cards_dropped)
-
 	for view in tableau_views:
 		view.card_clicked.connect(_on_card_clicked)
 		view.card_released.connect(_on_card_released)
@@ -74,12 +72,12 @@ func refresh_board() -> void:
 			if card_view.card != null:
 				reusable_views[card_view.card] = card_view
 
-	stock_view.setup_with_pool(game_state.stock, reusable_views)
-	waste_view.setup_with_pool(game_state.waste, reusable_views)
+	stock_view.setup(game_state.stock, reusable_views)
+	waste_view.setup(game_state.waste, reusable_views)
 	for i in range(foundation_views.size()):
-		foundation_views[i].setup_with_pool(game_state.foundations[i], reusable_views)
+		foundation_views[i].setup(game_state.foundations[i], reusable_views)
 	for i in range(tableau_views.size()):
-		tableau_views[i].setup_with_pool(game_state.tableau[i], reusable_views)
+		tableau_views[i].setup(game_state.tableau[i], reusable_views)
 
 	for unused_view in reusable_views.values():
 		if is_instance_valid(unused_view):
@@ -204,7 +202,7 @@ func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
 	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
 	if not result.succeeded:
 		return
-	_after_successful_move(target_pile, {}, result.points_awarded)
+	_after_successful_move(target_pile, { }, result.points_awarded)
 
 
 func auto_move_selected_cards(source_view: PileView) -> void:
@@ -223,11 +221,7 @@ func auto_move_selected_cards(source_view: PileView) -> void:
 		_after_successful_move(target, start_positions, result.points_awarded)
 
 
-func _after_successful_move(
-	target_pile: CardPile,
-	animation_starts: Dictionary = { },
-	points_awarded: int = 0,
-) -> void:
+func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary = { }, points_awarded: int = 0) -> void:
 	clear_selection()
 	refresh_board()
 	_play_move_sound()
@@ -237,7 +231,6 @@ func _after_successful_move(
 		check_for_win()
 	if target_pile.type == CardPile.Type.TABLEAU:
 		_show_tableau_score(target_pile, points_awarded)
-		check_for_win()
 
 
 func _show_foundation_score(foundation: CardPile, points: int) -> void:
