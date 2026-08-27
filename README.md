@@ -27,7 +27,6 @@ Dieses Projekt setzt klassisches Klondike Solitaire in Godot um. Spiellogik, Reg
 - Responsive Board-Skalierung für unterschiedliche Fenstergrößen
 - Gewinnanimation
 - Modularer Kartenshader mit Outline- und Shine-Effekt
-- Automatisierte Tests für Regeln, Spielzüge und Persistenz
 
 ## Voraussetzungen
 
