@@ -127,4 +127,4 @@ func _flip_new_top_tableau_card(pile: CardPile) -> void:
 
 
 func can_auto_finish() -> bool:
-	return state.are_all_cards_faced_up()
+	return state.are_all_cards_faced_up() and state.stock.is_empty() and state.waste.is_empty()
