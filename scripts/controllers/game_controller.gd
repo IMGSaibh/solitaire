@@ -83,7 +83,7 @@ func refresh_board() -> void:
 		if is_instance_valid(unused_view):
 			unused_view.queue_free()
 
-	button_ui.set_auto_finish_available(game_service.can_auto_finish() and not is_game_won() and not auto_finish_running)
+	button_ui.set_auto_finish_available(game_service.can_auto_finish() and not game_state.is_game_won() and not auto_finish_running)
 
 
 func _on_auto_finish_requested() -> void:
@@ -296,17 +296,10 @@ func load_game() -> Error:
 
 
 func check_for_win() -> void:
-	if win_animation_started or not is_game_won():
+	if win_animation_started or not game_state.is_game_won():
 		return
 	win_animation_started = true
 	win_animation.play(game_state.foundations, foundation_views)
-
-
-func is_game_won() -> bool:
-	for foundation in game_state.foundations:
-		if foundation.size() != GameState.MAX_RANK:
-			return false
-	return true
 
 
 func _all_pile_views() -> Array[PileView]:

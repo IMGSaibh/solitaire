@@ -151,3 +151,10 @@ func are_all_cards_faced_up() -> bool:
 			if not card.face_up:
 				return false
 	return true
+
+
+func is_game_won() -> bool:
+	for foundation in foundations:
+		if foundation.size() != GameState.MAX_RANK:
+			return false
+	return true

@@ -7,7 +7,6 @@ const SCORE_POPUP_RISE := 70.0
 const SCORE_POPUP_FONT_SIZE := 52
 
 @export var card_scene: PackedScene
-
 @onready var pile_texture: TextureRect = $PileTexture
 
 var pile: CardPile
@@ -34,7 +33,6 @@ func _update_pile_texture() -> void:
 		CardPile.Type.FOUNDATION:
 			pile_texture.texture = preload("res://assets/cards/foundation/foundation-01.png")
 			pile_texture.show()
-
 		CardPile.Type.TABLEAU:
 			pile_texture.texture = preload("res://assets/cards/tableau/tableau-01.png")
 			pile_texture.show()
@@ -44,7 +42,6 @@ func _update_pile_texture() -> void:
 		CardPile.Type.WASTE:
 			pile_texture.texture = preload("res://assets/cards/waste/waste-01.png")
 			pile_texture.show()
-
 		_:
 			pile_texture.hide()
 
