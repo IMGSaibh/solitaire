@@ -9,7 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://8x7vygkoaovi" path="res://assets/sounds/move-card.wav" id="7_move_card"]
 
 [sub_resource type="GDScript" id="GDScript_0rn35"]
-script/source = "class_name BoardView
+script/source = "#class_name BoardView
 extends Control
 
 const REFERENCE_SIZE := Vector2(1920.0, 1080.0)
