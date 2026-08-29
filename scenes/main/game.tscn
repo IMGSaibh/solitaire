@@ -5,9 +5,25 @@
 [ext_resource type="PackedScene" uid="uid://qsmsyhxi86cu" path="res://scenes/cards/pile_view.tscn" id="2_ma5rq"]
 [ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
-[ext_resource type="Script" uid="uid://m7ay6nctxdix" path="res://scripts/views/board_view.gd" id="5_board"]
 [ext_resource type="PackedScene" uid="uid://dmwsgvyndrwci" path="res://scenes/ui/button_ui.tscn" id="6_button_ui"]
 [ext_resource type="AudioStream" uid="uid://8x7vygkoaovi" path="res://assets/sounds/move-card.wav" id="7_move_card"]
+
+[sub_resource type="GDScript" id="GDScript_0rn35"]
+script/source = "class_name BoardView
+extends Control
+
+const REFERENCE_SIZE := Vector2(1920.0, 1080.0)
+
+var pile_views: Dictionary = { }
+
+
+func _ready() -> void:
+	for child in get_children():
+		if child is PileView:
+			pile_views[child] = child.position
+	# resized.connect(_layout_board)
+	# _layout_board.call_deferred()
+"
 
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
@@ -36,7 +52,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("5_board")
+script = SubResource("GDScript_0rn35")
 
 [node name="Stock" parent="Board" unique_id=865190981 instance=ExtResource("2_ma5rq")]
 layout_mode = 0

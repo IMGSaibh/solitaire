@@ -67,7 +67,11 @@ func new_game() -> void:
 func refresh_board(animate_moved_cards: bool = false) -> void:
 	score_label.text = "Punkte: %d" % game_state.score
 	var reusable_views: Dictionary = { }
-	for view in _all_pile_views():
+	var all_pile_views: Array[PileView] = [stock_view, waste_view]
+	all_pile_views.append_array(foundation_views)
+	all_pile_views.append_array(tableau_views)
+
+	for view in all_pile_views:
 		for card_view in view.card_views:
 			if card_view.card != null:
 				reusable_views[card_view.card] = card_view
@@ -153,7 +157,10 @@ func _select_cards(pile_view: PileView, card_index: int) -> void:
 func clear_selection() -> void:
 	selected_source_pile = null
 	selected_start_index = -1
-	for view in _all_pile_views():
+	var all_pile_views: Array[PileView] = [stock_view, waste_view]
+	all_pile_views.append_array(foundation_views)
+	all_pile_views.append_array(tableau_views)
+	for view in all_pile_views:
 		view.clear_outlines()
 
 
@@ -219,28 +226,16 @@ func _after_successful_move(target_pile: CardPile, points_awarded: int = 0) -> v
 	clear_selection()
 	refresh_board(true)
 	_play_move_sound()
-	if target_pile.type == CardPile.Type.FOUNDATION:
-		_show_foundation_score(target_pile, points_awarded)
-		check_for_win()
-	if target_pile.type == CardPile.Type.TABLEAU:
-		_show_tableau_score(target_pile, points_awarded)
-
-func _show_foundation_score(foundation: CardPile, points: int) -> void:
-	if points <= 0:
-		return
-	var foundation_index := game_state.foundations.find(foundation)
-	if foundation_index < 0 or foundation_index >= foundation_views.size():
-		return
-	foundation_views[foundation_index].show_score_popup(points)
+	_show_score_on_pile(target_pile, points_awarded)
 
 
-func _show_tableau_score(tableau: CardPile, points: int) -> void:
-	if points <= 0:
-		return
-	var tableau_index := game_state.tableau.find(tableau)
-	if tableau_index < 0 or tableau_index >= tableau_views.size():
-		return
-	tableau_views[tableau_index].show_score_popup(points)
+func _show_score_on_pile(card_pile: CardPile, points: int) -> void:
+	if card_pile.type == CardPile.Type.FOUNDATION:
+		var foundation_index := game_state.foundations.find(card_pile)
+		foundation_views[foundation_index].show_score_popup(points)
+	if card_pile.type == CardPile.Type.TABLEAU:
+		var tableau_index := game_state.tableau.find(card_pile)
+		tableau_views[tableau_index].show_score_popup(points)
 
 
 func _play_move_sound() -> void:
@@ -277,13 +272,6 @@ func check_for_win() -> void:
 		return
 	win_animation_started = true
 	win_animation.play(game_state.foundations, foundation_views)
-
-
-func _all_pile_views() -> Array[PileView]:
-	var result: Array[PileView] = [stock_view, waste_view]
-	result.append_array(foundation_views)
-	result.append_array(tableau_views)
-	return result
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
