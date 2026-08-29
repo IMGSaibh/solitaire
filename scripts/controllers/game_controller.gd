@@ -36,8 +36,8 @@ func _connect_signals_to_views() -> void:
 	button_ui.new_game_requested.connect(new_game)
 	button_ui.auto_finish_requested.connect(_on_auto_finish_requested)
 	button_ui.undo_requested.connect(undo)
-	button_ui.save_requested.connect(save_game)
-	button_ui.load_requested.connect(load_game)
+	button_ui.save_requested.connect(on_btn_save_game)
+	button_ui.load_requested.connect(on_btn_load_game)
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
@@ -242,13 +242,14 @@ func undo() -> void:
 		refresh_board()
 
 
-func save_game() -> Error:
-	return game_service.save_game()
+func on_btn_save_game() -> Error:
+	return game_service.save_game_to_json()
+	# TODO: Show a message to the user that the game was saved successfully or if there was an error.
 
 
-func load_game() -> Error:
+func on_btn_load_game() -> Error:
 	auto_finish_running = false
-	var error := game_service.load_game()
+	var error := game_service.load_game_from_json()
 	if error == OK:
 		win_animation.stop()
 		win_animation_started = false
@@ -266,19 +267,7 @@ func check_for_win() -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not event is InputEventKey or not event.pressed or event.echo:
-		return
-	if event.ctrl_pressed:
-		match event.keycode:
-			KEY_Z:
-				undo()
-			KEY_S:
-				save_game()
-			KEY_L:
-				load_game()
-			KEY_N:
-				new_game()
-	elif OS.is_debug_build() and event.keycode == KEY_W:
+	if OS.is_debug_build() and event.keycode == KEY_W:
 		_start_test_win_animation()
 
 

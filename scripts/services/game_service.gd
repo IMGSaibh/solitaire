@@ -15,7 +15,7 @@ func _init(p_state: GameState = null) -> void:
 
 func new_game() -> void:
 	state.new_game()
-	clear_history()
+	undo_stack.clear()
 
 
 func try_move(source: CardPile, start_index: int, target: CardPile) -> MoveResult:
@@ -35,7 +35,7 @@ func try_move(source: CardPile, start_index: int, target: CardPile) -> MoveResul
 		points_awarded = TABLEAU_CARD_SCORE
 	state.score += points_awarded
 	_flip_new_top_tableau_card(source)
-	_record_change(before)
+	undo_stack.append(before)
 	return MoveResult.success(points_awarded)
 
 
@@ -47,7 +47,7 @@ func draw_from_stock() -> bool:
 	var card := state.stock.remove_top_card()
 	card.face_up = true
 	state.waste.add_card(card)
-	_record_change(before)
+	undo_stack.append(before)
 	return true
 
 
@@ -60,7 +60,7 @@ func recycle_waste() -> bool:
 		var card := state.waste.remove_top_card()
 		card.face_up = false
 		state.stock.add_card(card)
-	_record_change(before)
+	undo_stack.append(before)
 	return true
 
 
@@ -89,33 +89,25 @@ func undo() -> bool:
 	return true
 
 
-func save_game(path: String = DEFAULT_SAVE_PATH) -> Error:
+func save_game_to_json(path: String = DEFAULT_SAVE_PATH) -> Error:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
-		return FileAccess.get_open_error()
+		return ERR_CANT_OPEN
 	file.store_string(JSON.stringify(state.create_snapshot(), "\t"))
 	return OK
 
 
-func load_game(path: String = DEFAULT_SAVE_PATH) -> Error:
+func load_game_from_json(path: String = DEFAULT_SAVE_PATH) -> Error:
 	if not FileAccess.file_exists(path):
 		return ERR_FILE_NOT_FOUND
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
-		return FileAccess.get_open_error()
+		return ERR_CANT_OPEN
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	if not parsed is Dictionary or not state.restore_snapshot(parsed):
 		return ERR_PARSE_ERROR
-	clear_history()
-	return OK
-
-
-func clear_history() -> void:
 	undo_stack.clear()
-
-
-func _record_change(before: Dictionary) -> void:
-	undo_stack.append(before)
+	return OK
 
 
 func _flip_new_top_tableau_card(pile: CardPile) -> void:
