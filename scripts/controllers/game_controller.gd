@@ -64,7 +64,7 @@ func new_game() -> void:
 	refresh_board()
 
 
-func refresh_board() -> void:
+func refresh_board(animate_moved_cards: bool = false) -> void:
 	score_label.text = "Punkte: %d" % game_state.score
 	var reusable_views: Dictionary = { }
 	for view in _all_pile_views():
@@ -72,12 +72,12 @@ func refresh_board() -> void:
 			if card_view.card != null:
 				reusable_views[card_view.card] = card_view
 
-	stock_view.setup(game_state.stock, reusable_views)
-	waste_view.setup(game_state.waste, reusable_views)
+	stock_view.setup(game_state.stock, reusable_views, animate_moved_cards)
+	waste_view.setup(game_state.waste, reusable_views, animate_moved_cards)
 	for i in range(foundation_views.size()):
-		foundation_views[i].setup(game_state.foundations[i], reusable_views)
+		foundation_views[i].setup(game_state.foundations[i], reusable_views, animate_moved_cards)
 	for i in range(tableau_views.size()):
-		tableau_views[i].setup(game_state.tableau[i], reusable_views)
+		tableau_views[i].setup(game_state.tableau[i], reusable_views, animate_moved_cards)
 
 	for unused_view in reusable_views.values():
 		if is_instance_valid(unused_view):
@@ -117,11 +117,9 @@ func _auto_finish_next_card() -> bool:
 		for foundation in game_state.foundations:
 			if not KlondikeRules.can_move(source, card_index, foundation):
 				continue
-			var card_view := source_view.card_views[card_index]
-			var start_positions: Dictionary = { card_view: card_view.global_position }
 			var result := game_service.try_move(source, card_index, foundation)
 			if result.succeeded:
-				_after_successful_move(foundation, start_positions, result.points_awarded)
+				_after_successful_move(foundation, result.points_awarded)
 				return true
 	return false
 
@@ -193,7 +191,7 @@ func _on_card_released(pile_view: PileView, card_index: int) -> void:
 		return
 	if selected_source_pile != pile_view.pile or selected_start_index != card_index:
 		return
-	auto_move_selected_cards(pile_view)
+	auto_move_selected_cards()
 
 
 func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
@@ -202,36 +200,30 @@ func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
 	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
 	if not result.succeeded:
 		return
-	_after_successful_move(target_pile, { }, result.points_awarded)
+	_after_successful_move(target_pile, result.points_awarded)
 
 
-func auto_move_selected_cards(source_view: PileView) -> void:
+func auto_move_selected_cards() -> void:
 	if selected_source_pile == null or selected_start_index < 0:
 		return
 	var target := game_service.find_automatic_target(selected_source_pile, selected_start_index)
 	if target == null:
 		clear_selection()
 		return
-	var start_positions: Dictionary = { }
-	for i in range(selected_start_index, source_view.card_views.size()):
-		var card_view := source_view.card_views[i]
-		start_positions[card_view] = card_view.global_position
 	var result := game_service.try_move(selected_source_pile, selected_start_index, target)
 	if result.succeeded:
-		_after_successful_move(target, start_positions, result.points_awarded)
+		_after_successful_move(target, result.points_awarded)
 
 
-func _after_successful_move(target_pile: CardPile, animation_starts: Dictionary = { }, points_awarded: int = 0) -> void:
+func _after_successful_move(target_pile: CardPile, points_awarded: int = 0) -> void:
 	clear_selection()
-	refresh_board()
+	refresh_board(true)
 	_play_move_sound()
-	_animate_moved_cards(animation_starts)
 	if target_pile.type == CardPile.Type.FOUNDATION:
 		_show_foundation_score(target_pile, points_awarded)
 		check_for_win()
 	if target_pile.type == CardPile.Type.TABLEAU:
 		_show_tableau_score(target_pile, points_awarded)
-
 
 func _show_foundation_score(foundation: CardPile, points: int) -> void:
 	if points <= 0:
@@ -253,21 +245,6 @@ func _show_tableau_score(tableau: CardPile, points: int) -> void:
 
 func _play_move_sound() -> void:
 	move_card_audio.play()
-
-
-func _animate_moved_cards(start_positions: Dictionary) -> void:
-	var moved_views: Array[CardView] = []
-	for view in start_positions:
-		var card_view := view as CardView
-		if is_instance_valid(card_view):
-			moved_views.append(card_view)
-
-	if moved_views.is_empty():
-		return
-
-	for order in range(moved_views.size()):
-		var card_view := moved_views[order]
-		card_view.animate_move_from(start_positions[card_view] as Vector2, order)
 
 
 func undo() -> void:

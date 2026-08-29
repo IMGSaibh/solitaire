@@ -18,9 +18,9 @@ signal card_released(pile_view: PileView, card_index: int)
 signal cards_dropped(data: CardDragData, target_pile: CardPile)
 
 
-func setup(pile_data: CardPile, reusable_views: Dictionary) -> void:
+func setup(pile_data: CardPile, reusable_views: Dictionary, animate_adopted_cards: bool = false) -> void:
 	pile = pile_data
-	_refresh(reusable_views, false)
+	_refresh(reusable_views, animate_adopted_cards)
 	_update_pile_texture()
 
 
@@ -46,28 +46,30 @@ func _update_pile_texture() -> void:
 			pile_texture.hide()
 
 
-func _refresh(reusable_views: Dictionary, free_unused: bool) -> void:
+func _refresh(reusable_views: Dictionary, animate_adopted_cards: bool) -> void:
 	var refreshed_views: Array[CardView] = []
+	var animation_order := 0
 	for i in range(pile.cards.size()):
 		var card := pile.cards[i]
 		var card_view: CardView = reusable_views.get(card) as CardView
+		var was_adopted := false
 		if card_view != null:
 			reusable_views.erase(card)
-			_adopt_card_view(card_view)
+			was_adopted = _adopt_card_view(card_view)
 		else:
 			card_view = _create_card_view()
 
 		card_view.setup(card)
 		card_view.set_drag_data(_create_drag_data(i))
-		_position_card(card_view, i)
+		var target_global_position := get_global_transform() * _card_position(i)
+		if animate_adopted_cards and was_adopted:
+			card_view.animate_move_to(target_global_position, animation_order)
+			animation_order += 1
+		else:
+			card_view.global_position = target_global_position
 		refreshed_views.append(card_view)
 		move_child(card_view, get_child_count() - 1)
 
-	if free_unused:
-		for unused_view in reusable_views.values():
-			if is_instance_valid(unused_view):
-				unused_view.queue_free()
-		reusable_views.clear()
 	card_views = refreshed_views
 	_update_drop_area()
 
@@ -79,13 +81,16 @@ func _create_card_view() -> CardView:
 	return card_view
 
 
-func _adopt_card_view(card_view: CardView) -> void:
+func _adopt_card_view(card_view: CardView) -> bool:
 	var old_pile_view := card_view.get_parent() as PileView
-	if old_pile_view != self:
-		if old_pile_view != null:
-			old_pile_view.release_card_view(card_view)
-		card_view.reparent(self, false)
+	if old_pile_view == self:
+		_connect_card_view(card_view)
+		return false
+	if old_pile_view != null:
+		old_pile_view.release_card_view(card_view)
+	card_view.reparent(self, true)
 	_connect_card_view(card_view)
+	return true
 
 
 func _connect_card_view(card_view: CardView) -> void:
@@ -111,9 +116,9 @@ func _disconnect_card_view_signals(card_view: CardView) -> void:
 		card_view.drag_finished.disconnect(_on_card_drag_finished)
 
 
-func _position_card(card_view: CardView, index: int) -> void:
+func _card_position(index: int) -> Vector2:
 	var y_position := index * CARD_THEME.tableau_offset if pile.type == CardPile.Type.TABLEAU else 0.0
-	card_view.position = Vector2(0.0, y_position)
+	return Vector2(0.0, y_position)
 
 
 func _update_drop_area() -> void:

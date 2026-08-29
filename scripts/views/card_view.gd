@@ -38,9 +38,7 @@ func setup(card_data: CardData) -> void:
 	update_visual()
 
 
-func animate_move_from(start_global_position: Vector2, order: int = 0) -> void:
-	var target_global_position := global_position
-	global_position = start_global_position
+func animate_move_to(target_global_position: Vector2, order: int = 0) -> void:
 	z_index = 100 + order
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
