@@ -65,7 +65,7 @@ func new_game() -> void:
 
 func refresh_board(animate_moved_cards: bool = false) -> void:
 	score_label.text = "Punkte: %d" % game_state.score
-	var reusable_views: Dictionary = { }
+	var reusable_sw_card_views: Dictionary = { }
 	var stock_waste_pile_views: Array[PileView] = [stock_view, waste_view]
 	stock_waste_pile_views.append_array(foundation_views)
 	stock_waste_pile_views.append_array(tableau_views)
@@ -73,17 +73,17 @@ func refresh_board(animate_moved_cards: bool = false) -> void:
 	for sw_view in stock_waste_pile_views:
 		for sw_card_view in sw_view.card_views:
 			if sw_card_view.card != null:
-				reusable_views[sw_card_view.card] = sw_card_view
+				reusable_sw_card_views[sw_card_view.card] = sw_card_view
 
-	stock_view.setup(game_state.stock, reusable_views, animate_moved_cards)
-	waste_view.setup(game_state.waste, reusable_views, animate_moved_cards)
+	stock_view.setup(game_state.stock, reusable_sw_card_views, animate_moved_cards)
+	waste_view.setup(game_state.waste, reusable_sw_card_views, animate_moved_cards)
 
 	for i in range(foundation_views.size()):
-		foundation_views[i].setup(game_state.foundations[i], reusable_views, animate_moved_cards)
+		foundation_views[i].setup(game_state.foundations[i], reusable_sw_card_views, animate_moved_cards)
 	for i in range(tableau_views.size()):
-		tableau_views[i].setup(game_state.tableau[i], reusable_views, animate_moved_cards)
+		tableau_views[i].setup(game_state.tableau[i], reusable_sw_card_views, animate_moved_cards)
 
-	for unused_view in reusable_views.values():
+	for unused_view in reusable_sw_card_views.values():
 		if is_instance_valid(unused_view):
 			unused_view.queue_free()
 
