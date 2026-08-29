@@ -79,6 +79,21 @@ func new_game() -> void:
 	_fill_stock(deck)
 
 
+func are_all_cards_faced_up() -> bool:
+	for pile in tableau:
+		for card in pile.cards:
+			if not card.face_up:
+				return false
+	return true
+
+
+func is_game_won() -> bool:
+	for foundation in foundations:
+		if foundation.cards.size() != GameState.MAX_RANK:
+			return false
+	return true
+
+
 func create_snapshot() -> Dictionary:
 	return {
 		"score": score,
@@ -93,30 +108,30 @@ func restore_snapshot(snapshot: Dictionary) -> bool:
 	var parsed_score := int(snapshot.get("score", 0))
 	var stock_cards: Variant = _deserialize_cards(snapshot.get("stock", []))
 	var waste_cards: Variant = _deserialize_cards(snapshot.get("waste", []))
-	var foundation_data := snapshot.get("foundations", []) as Array
-	var tableau_data := snapshot.get("tableau", []) as Array
+	var foundation_piles := snapshot.get("foundations", []) as Array
+	var tableau_piles := snapshot.get("tableau", []) as Array
 
 	if stock_cards == null or waste_cards == null:
 		return false
-	if foundation_data.size() != FOUNDATION_COUNT or tableau_data.size() != TABLEAU_COUNT:
+	if foundation_piles.size() != FOUNDATION_COUNT or tableau_piles.size() != TABLEAU_COUNT:
 		return false
 
 	var parsed_foundations: Array[Array] = []
 	var parsed_tableau: Array[Array] = []
-	for pile_data in foundation_data:
-		var parsed: Variant = _deserialize_cards(pile_data)
+	for foundation_pile in foundation_piles:
+		var parsed: Variant = _deserialize_cards(foundation_pile)
 		if parsed == null:
 			return false
 		parsed_foundations.append(parsed)
-	for pile_data in tableau_data:
-		var parsed: Variant = _deserialize_cards(pile_data)
+	for tableau_pile in tableau_piles:
+		var parsed: Variant = _deserialize_cards(tableau_pile)
 		if parsed == null:
 			return false
 		parsed_tableau.append(parsed)
 
 	stock.cards.assign(stock_cards)
 	waste.cards.assign(waste_cards)
-	score = maxi(parsed_score, 0)
+	score = parsed_score
 	for i in range(FOUNDATION_COUNT):
 		foundations[i].cards.assign(parsed_foundations[i])
 	for i in range(TABLEAU_COUNT):
@@ -143,18 +158,3 @@ func _deserialize_cards(data: Variant) -> Variant:
 			return null
 		result.append(card)
 	return result
-
-
-func are_all_cards_faced_up() -> bool:
-	for pile in tableau:
-		for card in pile.cards:
-			if not card.face_up:
-				return false
-	return true
-
-
-func is_game_won() -> bool:
-	for foundation in foundations:
-		if foundation.cards.size() != GameState.MAX_RANK:
-			return false
-	return true
