@@ -6,7 +6,6 @@ var selected_source_pile: CardPile
 var selected_start_index := -1
 var win_animation_started := false
 var auto_finish_running := false
-var auto_finish_run_id := 0
 
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
@@ -56,7 +55,7 @@ func _connect_signals_to_views() -> void:
 
 
 func new_game() -> void:
-	_cancel_auto_finish()
+	auto_finish_running = false
 	win_animation.stop()
 	win_animation_started = false
 	game_service.new_game()
@@ -94,16 +93,12 @@ func _on_auto_finish_requested() -> void:
 	if auto_finish_running or not game_service.can_auto_finish():
 		return
 	auto_finish_running = true
-	auto_finish_run_id += 1
-	var run_id := auto_finish_run_id
 	clear_selection()
 	refresh_board()
 
-	while run_id == auto_finish_run_id and _auto_finish_next_card():
+	while _auto_finish_next_card():
 		await get_tree().create_timer(CardView.AUTO_MOVE_DURATION).timeout
 
-	if run_id != auto_finish_run_id:
-		return
 	auto_finish_running = false
 	refresh_board()
 	check_for_win()
@@ -126,11 +121,6 @@ func _auto_finish_next_card() -> bool:
 				_after_successful_move(foundation, result.points_awarded)
 				return true
 	return false
-
-
-func _cancel_auto_finish() -> void:
-	auto_finish_run_id += 1
-	auto_finish_running = false
 
 
 func _select_cards(pile_view: PileView, card_index: int) -> void:
@@ -243,7 +233,7 @@ func _play_move_sound() -> void:
 
 
 func undo() -> void:
-	_cancel_auto_finish()
+	auto_finish_running = false
 	if game_service.undo():
 		win_animation.stop()
 		win_animation_started = false
@@ -256,7 +246,7 @@ func save_game() -> Error:
 
 
 func load_game() -> Error:
-	_cancel_auto_finish()
+	auto_finish_running = false
 	var error := game_service.load_game()
 	if error == OK:
 		win_animation.stop()
