@@ -39,10 +39,6 @@ func is_empty() -> bool:
 	return cards.is_empty()
 
 
-func size() -> int:
-	return cards.size()
-
-
 func get_cards_from(start_index: int) -> Array[CardData]:
 	if start_index < 0 or start_index >= cards.size():
 		return []

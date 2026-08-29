@@ -66,17 +66,18 @@ func new_game() -> void:
 func refresh_board(animate_moved_cards: bool = false) -> void:
 	score_label.text = "Punkte: %d" % game_state.score
 	var reusable_views: Dictionary = { }
-	var all_pile_views: Array[PileView] = [stock_view, waste_view]
-	all_pile_views.append_array(foundation_views)
-	all_pile_views.append_array(tableau_views)
+	var stock_waste_pile_views: Array[PileView] = [stock_view, waste_view]
+	stock_waste_pile_views.append_array(foundation_views)
+	stock_waste_pile_views.append_array(tableau_views)
 
-	for view in all_pile_views:
-		for card_view in view.card_views:
-			if card_view.card != null:
-				reusable_views[card_view.card] = card_view
+	for sw_view in stock_waste_pile_views:
+		for sw_card_view in sw_view.card_views:
+			if sw_card_view.card != null:
+				reusable_views[sw_card_view.card] = sw_card_view
 
 	stock_view.setup(game_state.stock, reusable_views, animate_moved_cards)
 	waste_view.setup(game_state.waste, reusable_views, animate_moved_cards)
+
 	for i in range(foundation_views.size()):
 		foundation_views[i].setup(game_state.foundations[i], reusable_views, animate_moved_cards)
 	for i in range(tableau_views.size()):
