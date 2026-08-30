@@ -197,7 +197,7 @@ func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
 	if auto_finish_running or data == null:
 		return
 	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
-	_after_successful_move(target_pile, result)
+	_after_successful_move(target_pile, result, false)
 
 
 func auto_move_selected_cards() -> void:
@@ -211,9 +211,9 @@ func auto_move_selected_cards() -> void:
 	_after_successful_move(target, result)
 
 
-func _after_successful_move(target_pile: CardPile, points_awarded: int = 0) -> void:
+func _after_successful_move(target_pile: CardPile, points_awarded: int = 0, animate_move: bool = true) -> void:
 	clear_selection()
-	refresh_board(true)
+	refresh_board(animate_move)
 	move_card_audio.play()
 	_show_score_on_pile(target_pile, points_awarded)
 
