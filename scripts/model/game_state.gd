@@ -28,18 +28,7 @@ func _create_piles() -> void:
 		tableau.append(CardPile.new(CardPile.Type.TABLEAU))
 
 
-func create_deck() -> Array[CardData]:
-	var deck: Array[CardData] = []
-
-	for suit in CardData.Suit.values():
-		for rank in range(1, MAX_RANK + 1):
-			var card := CardData.new(suit, rank, false)
-			deck.append(card)
-
-	return deck
-
-
-func _clear_piles() -> void:
+func clear_piles() -> void:
 	stock.cards.clear()
 	waste.cards.clear()
 
@@ -48,35 +37,6 @@ func _clear_piles() -> void:
 
 	for pile in tableau:
 		pile.cards.clear()
-
-
-func _deal_tableau(deck: Array[CardData]) -> void:
-	for column_index in range(TABLEAU_COUNT):
-		for card_index in range(column_index + 1):
-			var card: CardData = deck.pop_back()
-
-			# Nur die letzte Karte jeder Spalte ist sichtbar
-			card.face_up = card_index == column_index
-
-			tableau[column_index].add_card(card)
-
-
-func _fill_stock(deck: Array[CardData]) -> void:
-	while not deck.is_empty():
-		var card: CardData = deck.pop_back()
-		card.face_up = false
-		stock.add_card(card)
-
-
-func new_game() -> void:
-	_clear_piles()
-	score = 0
-
-	var deck := create_deck()
-	deck.shuffle()
-
-	_deal_tableau(deck)
-	_fill_stock(deck)
 
 
 func are_all_cards_faced_up() -> bool:

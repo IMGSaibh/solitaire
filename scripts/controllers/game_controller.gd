@@ -35,9 +35,9 @@ func _ready() -> void:
 func _connect_signals_to_views() -> void:
 	button_ui.new_game_requested.connect(new_game)
 	button_ui.auto_finish_requested.connect(_on_auto_finish_requested)
-	button_ui.undo_requested.connect(undo)
-	button_ui.save_requested.connect(on_btn_save_game)
-	button_ui.load_requested.connect(on_btn_load_game)
+	button_ui.undo_requested.connect(_on_btn_undo)
+	button_ui.save_requested.connect(_on_btn_save_game)
+	button_ui.load_requested.connect(_on_btn_load_game)
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
@@ -233,7 +233,7 @@ func _play_move_sound() -> void:
 	move_card_audio.play()
 
 
-func undo() -> void:
+func _on_btn_undo() -> void:
 	auto_finish_running = false
 	if game_service.undo():
 		win_animation.stop()
@@ -242,12 +242,12 @@ func undo() -> void:
 		refresh_board()
 
 
-func on_btn_save_game() -> Error:
+func _on_btn_save_game() -> Error:
 	return game_service.save_game_to_json()
 	# TODO: Show a message to the user that the game was saved successfully or if there was an error.
 
 
-func on_btn_load_game() -> Error:
+func _on_btn_load_game() -> Error:
 	auto_finish_running = false
 	var error := game_service.load_game_from_json()
 	if error == OK:
@@ -268,15 +268,4 @@ func check_for_win() -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if OS.is_debug_build() and event.keycode == KEY_W:
-		_start_test_win_animation()
-
-
-func _start_test_win_animation() -> void:
-	var test_foundations: Array[CardPile] = []
-	for i in range(GameState.FOUNDATION_COUNT):
-		test_foundations.append(CardPile.new(CardPile.Type.FOUNDATION))
-	var deck := game_state.create_deck()
-	for card in deck:
-		card.face_up = true
-		test_foundations[card.suit].add_card(card)
-	win_animation.play(test_foundations, foundation_views)
+		game_service.start_test_win_animation(win_animation, foundation_views)
