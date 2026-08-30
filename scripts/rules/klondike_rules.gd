@@ -51,12 +51,6 @@ static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bo
 	return true
 
 
-static func can_move_sequence_to_tableau(cards: Array[CardData], target_pile: CardPile) -> bool:
-	var first_card := cards[0]
-
-	return can_move_to_tableau(first_card, target_pile)
-
-
 static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> bool:
 	if card == null or target_pile == null or not card.face_up:
 		return false
@@ -76,27 +70,27 @@ static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> boo
 	return same_suit and next_rank
 
 
-static func can_move(source: CardPile, start_index: int, target: CardPile) -> bool:
-	if source == null or target == null or source == target:
+static func can_move(source_pile: CardPile, start_index: int, target_pile: CardPile) -> bool:
+	if source_pile == null or target_pile == null or source_pile == target_pile:
 		return false
-	if start_index < 0 or start_index >= source.cards.size():
+	if start_index < 0 or start_index >= source_pile.cards.size():
 		return false
 
-	var cards := source.get_cards_from(start_index)
-	match source.type:
+	var cards := source_pile.get_cards_from(start_index)
+	match source_pile.type:
 		CardPile.Type.TABLEAU:
-			if not can_pick_up_tableau_sequence(source, start_index):
+			if not can_pick_up_tableau_sequence(source_pile, start_index):
 				return false
 		CardPile.Type.WASTE, CardPile.Type.FOUNDATION:
-			if start_index != source.cards.size() - 1 or cards.size() != 1 or not cards[0].face_up:
+			if start_index != source_pile.cards.size() - 1 or cards.size() != 1 or not cards[0].face_up:
 				return false
 		_:
 			return false
 
-	match target.type:
+	match target_pile.type:
 		CardPile.Type.TABLEAU:
-			return can_move_sequence_to_tableau(cards, target)
+			return can_move_to_tableau(cards[0], target_pile)
 		CardPile.Type.FOUNDATION:
-			return cards.size() == 1 and can_move_to_foundation(cards[0], target)
+			return cards.size() == 1 and can_move_to_foundation(cards[0], target_pile)
 		_:
 			return false
