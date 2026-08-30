@@ -2,6 +2,7 @@ shader_type canvas_item;
 render_mode blend_premul_alpha;
 
 // Shine effect
+group_uniforms Shine;
 uniform bool shine_enabled = true;
 uniform float shine_line_smoothness : hint_range(0.0, 0.1) = 0.045;
 uniform float shine_line_width : hint_range(0.0, 0.2) = 0.09;
@@ -16,9 +17,11 @@ uniform float shine_position_max = 0.5;
 uniform float shine_alpha : hint_range(0.0, 1.0) = 1.0;
 
 // Outline effect
+group_uniforms Outline;
 uniform vec4 outline_color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
 uniform bool outline_enabled = false;
 uniform float outline_width : hint_range(0.0, 6.0) = 1.0;
+group_uniforms;
 
 
 vec2 rotate_uv(vec2 uv, vec2 center, float rotation_degrees) {
