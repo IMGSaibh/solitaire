@@ -23,25 +23,28 @@ func new_game() -> void:
 	undo_stack.clear()
 
 
-func try_move(source: CardPile, start_index: int, target: CardPile) -> MoveResult:
+func try_move(source: CardPile, start_index: int, target: CardPile) -> int:
 	if not KlondikeRules.can_move(source, start_index, target):
-		return MoveResult.failure()
+		return 0
 
 	var before := state.create_snapshot()
 	var moved_cards := source.remove_cards_from(start_index)
 	target.add_cards(moved_cards)
 	var moved_card: CardData = moved_cards.front()
-	var points_awarded := 0
 	if target.type == CardPile.Type.FOUNDATION and not moved_card.foundation_points_awarded:
 		moved_card.foundation_points_awarded = true
-		points_awarded = FOUNDATION_CARD_SCORE
-	elif target.type == CardPile.Type.TABLEAU and not moved_card.tableau_points_awarded:
+		state.score += FOUNDATION_CARD_SCORE
+		_flip_new_top_tableau_card(source)
+		undo_stack.append(before)
+		return FOUNDATION_CARD_SCORE # Return success without points awarded, as points are already added to the score
+
+	if target.type == CardPile.Type.TABLEAU and not moved_card.tableau_points_awarded:
 		moved_card.tableau_points_awarded = true
-		points_awarded = TABLEAU_CARD_SCORE
-	state.score += points_awarded
-	_flip_new_top_tableau_card(source)
-	undo_stack.append(before)
-	return MoveResult.success(points_awarded)
+		state.score += TABLEAU_CARD_SCORE
+		_flip_new_top_tableau_card(source)
+		undo_stack.append(before)
+		return TABLEAU_CARD_SCORE # Return success without points awarded, as points are already added to the score
+	return 0
 
 
 func _create_deck() -> Array[CardData]:

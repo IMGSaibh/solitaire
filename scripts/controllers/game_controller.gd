@@ -118,9 +118,10 @@ func _auto_finish_next_card() -> bool:
 			if not KlondikeRules.can_move(source, card_index, foundation):
 				continue
 			var result := game_service.try_move(source, card_index, foundation)
-			if result.succeeded:
-				_after_successful_move(foundation, result.points_awarded)
-				return true
+			_after_successful_move(foundation, result)
+			# Move exactly one card per pass. The caller waits for its tween before
+			# asking for the next card, which makes the cleanup visibly sequential.
+			return true
 	return false
 
 
@@ -196,9 +197,7 @@ func _on_cards_dropped(data: CardDragData, target_pile: CardPile) -> void:
 	if auto_finish_running or data == null:
 		return
 	var result := game_service.try_move(data.source_pile, data.start_index, target_pile)
-	if not result.succeeded:
-		return
-	_after_successful_move(target_pile, result.points_awarded)
+	_after_successful_move(target_pile, result)
 
 
 func auto_move_selected_cards() -> void:
@@ -209,8 +208,7 @@ func auto_move_selected_cards() -> void:
 		clear_selection()
 		return
 	var result := game_service.try_move(selected_source_pile, selected_start_index, target)
-	if result.succeeded:
-		_after_successful_move(target, result.points_awarded)
+	_after_successful_move(target, result)
 
 
 func _after_successful_move(target_pile: CardPile, points_awarded: int = 0) -> void:
