@@ -151,10 +151,6 @@ func _create_drag_data(card_index: int) -> CardDragData:
 	return CardDragData.new(pile, card_index)
 
 
-func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	return can_accept_drop(data)
-
-
 func can_accept_drop(data: Variant) -> bool:
 	if not data is CardDragData:
 		return false
@@ -162,14 +158,18 @@ func can_accept_drop(data: Variant) -> bool:
 	return KlondikeRules.can_move(typed_data.source_pile, typed_data.start_index, pile)
 
 
-func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	accept_drop(data)
-
-
 func accept_drop(data: Variant) -> void:
 	if not data is CardDragData or not can_accept_drop(data):
 		return
 	cards_dropped.emit(data as CardDragData, pile)
+
+
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	return can_accept_drop(data)
+
+
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	accept_drop(data)
 
 
 func _gui_input(event: InputEvent) -> void:
