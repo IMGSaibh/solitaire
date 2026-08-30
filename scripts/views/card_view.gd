@@ -114,11 +114,11 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 
 	preview.size = Vector2(CARD_THEME.card_size.x, CARD_THEME.card_size.y + CARD_THEME.tableau_offset * (dragged_cards.size() - 1))
 	set_drag_preview(preview)
-	_hide_dragged_cards(dragged_cards)
+	_hide_dragged_cards_on_old_pile(dragged_cards)
 	return drag_data
 
 
-func _hide_dragged_cards(dragged_cards: Array[CardData]) -> void:
+func _hide_dragged_cards_on_old_pile(dragged_cards: Array[CardData]) -> void:
 	var pile_view := get_parent() as PileView
 	if pile_view == null:
 		return
