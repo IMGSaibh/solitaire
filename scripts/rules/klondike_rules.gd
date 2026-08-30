@@ -24,6 +24,25 @@ static func can_move_to_tableau(card: CardData, target_pile: CardPile) -> bool:
 	return correct_rank and alternating_color
 
 
+static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> bool:
+	if card == null or target_pile == null or not card.face_up:
+		return false
+
+	if target_pile.type != CardPile.Type.FOUNDATION:
+		return false
+
+	# Leere Foundation startet immer mit Ass
+	if target_pile.is_empty():
+		return card.rank == 1
+
+	var top_card := target_pile.get_top_card()
+
+	var same_suit := card.suit == top_card.suit
+	var next_rank := card.rank == top_card.rank + 1
+
+	return same_suit and next_rank
+
+
 static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bool:
 	if pile == null or pile.type != CardPile.Type.TABLEAU:
 		return false
@@ -51,29 +70,8 @@ static func can_pick_up_tableau_sequence(pile: CardPile, start_index: int) -> bo
 	return true
 
 
-static func can_move_to_foundation(card: CardData, target_pile: CardPile) -> bool:
-	if card == null or target_pile == null or not card.face_up:
-		return false
-
-	if target_pile.type != CardPile.Type.FOUNDATION:
-		return false
-
-	# Leere Foundation startet immer mit Ass
-	if target_pile.is_empty():
-		return card.rank == 1
-
-	var top_card := target_pile.get_top_card()
-
-	var same_suit := card.suit == top_card.suit
-	var next_rank := card.rank == top_card.rank + 1
-
-	return same_suit and next_rank
-
-
 static func can_move(source_pile: CardPile, start_index: int, target_pile: CardPile) -> bool:
 	if source_pile == null or target_pile == null or source_pile == target_pile:
-		return false
-	if start_index < 0 or start_index >= source_pile.cards.size():
 		return false
 
 	var cards := source_pile.get_cards_from(start_index)
