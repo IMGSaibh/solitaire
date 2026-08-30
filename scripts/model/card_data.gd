@@ -15,12 +15,12 @@ var tableau_points_awarded: bool = false
 var foundation_points_awarded: bool = false
 
 
-func _init(p_suit: Suit, p_rank: int, p_face_up: bool = false, p_tableau_points_awarded: bool = false, p_foundation_points_awarded: bool = false) -> void:
+func _init(p_suit: Suit, p_rank: int, p_face_up: bool = false, p_got_t_points: bool = false, p_got_f_points: bool = false) -> void:
 	suit = p_suit
 	rank = p_rank
 	face_up = p_face_up
-	tableau_points_awarded = p_tableau_points_awarded
-	foundation_points_awarded = p_foundation_points_awarded
+	tableau_points_awarded = p_got_t_points
+	foundation_points_awarded = p_got_f_points
 
 
 func is_red() -> bool:

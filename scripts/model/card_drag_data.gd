@@ -11,7 +11,7 @@ func _init(p_source_pile: CardPile, p_start_index: int) -> void:
 
 
 func get_cards() -> Array[CardData]:
-	if source_pile == null or start_index < 0 or start_index >= source_pile.cards.size():
+	if source_pile == null:
 		return []
 
 	var result: Array[CardData] = []
