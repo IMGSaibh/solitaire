@@ -214,7 +214,7 @@ func auto_move_selected_cards() -> void:
 func _after_successful_move(target_pile: CardPile, points_awarded: int = 0) -> void:
 	clear_selection()
 	refresh_board(true)
-	_play_move_sound()
+	move_card_audio.play()
 	_show_score_on_pile(target_pile, points_awarded)
 
 
@@ -227,13 +227,9 @@ func _show_score_on_pile(card_pile: CardPile, points: int) -> void:
 		tableau_views[tableau_index].show_score_popup(points)
 
 
-func _play_move_sound() -> void:
-	move_card_audio.play()
-
-
 func _on_btn_undo() -> void:
 	auto_finish_running = false
-	if game_service.undo():
+	if game_service.undo_snapshot():
 		win_animation.stop()
 		win_animation_started = false
 		clear_selection()

@@ -113,7 +113,7 @@ func find_automatic_target(source: CardPile, start_index: int) -> CardPile:
 	return null
 
 
-func undo() -> bool:
+func undo_snapshot() -> bool:
 	if undo_stack.is_empty():
 		return false
 	var previous: Dictionary = undo_stack.pop_back()
