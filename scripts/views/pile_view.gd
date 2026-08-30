@@ -87,7 +87,6 @@ func _adopt_card_view(card_view: CardView) -> bool:
 		_connect_card_view(card_view)
 		return false
 	if old_pile_view != null:
-		# old_pile_view.release_card_view(card_view)
 		card_views.erase(card_view)
 		_disconnect_card_view_signals(card_view)
 	card_view.reparent(self, true)
@@ -102,8 +101,6 @@ func _connect_card_view(card_view: CardView) -> void:
 		card_view.card_released.connect(_on_card_view_released)
 	if not card_view.drag_finished.is_connected(_on_card_drag_finished):
 		card_view.drag_finished.connect(_on_card_drag_finished)
-
-# func release_card_view(card_view: CardView) -> void:
 
 
 func _disconnect_card_view_signals(card_view: CardView) -> void:
