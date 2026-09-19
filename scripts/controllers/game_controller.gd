@@ -22,6 +22,7 @@ var auto_finish_running := false
 @onready var win_animation: WinAnimation = $WinAnimationLayer
 @onready var button_ui: ButtonUi = $ButtonUi
 @onready var move_card_audio: AudioStreamPlayer = $MoveCardAudio
+@onready var game_won_audio: AudioStreamPlayer = $GameWonAudio
 @onready var score_label: Label = $ScorePanel/ScoreLabel
 
 
@@ -256,6 +257,7 @@ func _on_btn_load_game() -> Error:
 func check_for_win() -> void:
 	if win_animation_started or not game_state.is_game_won():
 		return
+	game_won_audio.play()
 	win_animation_started = true
 	win_animation.play(game_state.foundations, foundation_views)
 

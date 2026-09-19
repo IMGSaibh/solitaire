@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://6o2v7uiudmfw" path="res://scripts/animation/win_animation.gd" id="3_e3dby"]
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
 [ext_resource type="PackedScene" uid="uid://dmwsgvyndrwci" path="res://scenes/ui/button_ui.tscn" id="6_button_ui"]
+[ext_resource type="AudioStream" uid="uid://bkxfadyv17pv7" path="res://assets/sounds/game-won.wav" id="6_kjrfb"]
+[ext_resource type="AudioStream" uid="uid://dd6p262ppbqky" path="res://assets/sounds/game-level-music.ogg" id="6_se30j"]
 [ext_resource type="AudioStream" uid="uid://8x7vygkoaovi" path="res://assets/sounds/move-card.wav" id="7_move_card"]
 
 [sub_resource type="GDScript" id="GDScript_0rn35"]
@@ -24,6 +26,18 @@ func _ready() -> void:
 	# resized.connect(_layout_board)
 	# _layout_board.call_deferred()
 "
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_83gi5"]
+bg_color = Color(0.02745098, 0.25490198, 0.13725491, 0.9607843)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85882354, 0.72156864, 0.3019608, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
@@ -152,6 +166,7 @@ offset_top = 20.0
 offset_right = 310.0
 offset_bottom = 78.0
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_83gi5")
 
 [node name="ScoreLabel" type="Label" parent="ScorePanel" unique_id=1271985552]
 layout_mode = 2
@@ -166,6 +181,19 @@ layout_mode = 1
 
 [node name="MoveCardAudio" type="AudioStreamPlayer" parent="." unique_id=756968813]
 stream = ExtResource("7_move_card")
+volume_db = -4.445
+max_polyphony = 4
+bus = &"SFX"
+
+[node name="GameLevelMusicAudio" type="AudioStreamPlayer" parent="." unique_id=986822340]
+stream = ExtResource("6_se30j")
+volume_db = -23.397
+autoplay = true
+max_polyphony = 4
+bus = &"Music"
+
+[node name="GameWonAudio" type="AudioStreamPlayer" parent="." unique_id=903407506]
+stream = ExtResource("6_kjrfb")
 volume_db = -4.445
 max_polyphony = 4
 bus = &"SFX"
