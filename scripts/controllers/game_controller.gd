@@ -63,6 +63,7 @@ func new_game() -> void:
 	game_service.new_game()
 	clear_selection()
 	refresh_board()
+	game_music.stop()
 	game_music.play()
 
 
@@ -260,6 +261,7 @@ func check_for_win() -> void:
 	if win_animation_started or not game_state.is_game_won():
 		return
 	game_won_audio.play()
+	game_music.stop()
 	win_animation_started = true
 	win_animation.play(game_state.foundations, foundation_views)
 
