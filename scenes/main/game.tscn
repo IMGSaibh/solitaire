@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dpmravhpclsd8" path="res://scenes/cards/card_view.tscn" id="4_gsayk"]
 [ext_resource type="PackedScene" uid="uid://dmwsgvyndrwci" path="res://scenes/ui/button_ui.tscn" id="6_button_ui"]
 [ext_resource type="AudioStream" uid="uid://bkxfadyv17pv7" path="res://assets/sounds/game-won.wav" id="6_kjrfb"]
-[ext_resource type="AudioStream" uid="uid://dd6p262ppbqky" path="res://assets/sounds/game-level-music.ogg" id="6_se30j"]
+[ext_resource type="AudioStream" uid="uid://xxmr42untexs" path="res://assets/sounds/game-music.ogg" id="6_se30j"]
 [ext_resource type="AudioStream" uid="uid://8x7vygkoaovi" path="res://assets/sounds/move-card.wav" id="7_move_card"]
 
 [sub_resource type="GDScript" id="GDScript_0rn35"]
@@ -181,20 +181,19 @@ layout_mode = 1
 
 [node name="MoveCardAudio" type="AudioStreamPlayer" parent="." unique_id=756968813]
 stream = ExtResource("7_move_card")
-volume_db = -4.445
+volume_db = -19.606
 max_polyphony = 4
 bus = &"SFX"
 
-[node name="GameLevelMusicAudio" type="AudioStreamPlayer" parent="." unique_id=986822340]
+[node name="GameMusicAudio" type="AudioStreamPlayer" parent="." unique_id=986822340]
 stream = ExtResource("6_se30j")
-volume_db = -23.397
-autoplay = true
+volume_db = -17.474
 max_polyphony = 4
 bus = &"Music"
 
 [node name="GameWonAudio" type="AudioStreamPlayer" parent="." unique_id=903407506]
 stream = ExtResource("6_kjrfb")
-volume_db = -4.445
+volume_db = -28.388
 max_polyphony = 4
 bus = &"SFX"
 

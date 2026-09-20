@@ -23,6 +23,7 @@ var auto_finish_running := false
 @onready var button_ui: ButtonUi = $ButtonUi
 @onready var move_card_audio: AudioStreamPlayer = $MoveCardAudio
 @onready var game_won_audio: AudioStreamPlayer = $GameWonAudio
+@onready var game_music: AudioStreamPlayer = $GameMusicAudio
 @onready var score_label: Label = $ScorePanel/ScoreLabel
 
 
@@ -62,6 +63,7 @@ func new_game() -> void:
 	game_service.new_game()
 	clear_selection()
 	refresh_board()
+	game_music.play()
 
 
 func refresh_board(animate_moved_cards: bool = false) -> void:
@@ -264,4 +266,6 @@ func check_for_win() -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if OS.is_debug_build() and event.keycode == KEY_W:
+		game_won_audio.play()
+		game_music.stop()
 		game_service.start_test_win_animation(win_animation, foundation_views)
