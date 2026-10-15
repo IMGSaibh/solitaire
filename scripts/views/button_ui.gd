@@ -8,6 +8,7 @@ signal save_requested
 signal load_requested
 
 @onready var auto_finish_button: Button = %AutoFinishButton
+@onready var new_game_button: Button = %NewGameButton
 
 
 func _ready() -> void:
@@ -20,3 +21,7 @@ func _ready() -> void:
 
 func set_auto_finish_available(available: bool) -> void:
 	auto_finish_button.visible = available
+
+
+func set_new_game_available(available: bool) -> void:
+	new_game_button.disabled = not available

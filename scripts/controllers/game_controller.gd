@@ -6,6 +6,8 @@ var selected_source_pile: CardPile
 var selected_start_index := -1
 var win_animation_started := false
 var auto_finish_running := false
+var new_game_pending := false
+var solvable_deal_pool: SolvableDealPool
 
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
@@ -30,8 +32,19 @@ var auto_finish_running := false
 func _ready() -> void:
 	game_service = GameService.new()
 	game_state = game_service.state
+	solvable_deal_pool = SolvableDealPool.new()
 	_connect_signals_to_views()
 	new_game()
+
+
+func _process(_delta: float) -> void:
+	if solvable_deal_pool != null:
+		solvable_deal_pool.update()
+
+
+func _exit_tree() -> void:
+	if solvable_deal_pool != null:
+		solvable_deal_pool.shutdown()
 
 
 func _connect_signals_to_views() -> void:
@@ -57,14 +70,29 @@ func _connect_signals_to_views() -> void:
 
 
 func new_game() -> void:
+	if new_game_pending:
+		return
+	new_game_pending = true
+	button_ui.set_new_game_available(false)
+	var deal := solvable_deal_pool.take_seed()
+	while deal.is_empty():
+		score_label.text = "Lösbares Spiel wird vorbereitet …"
+		await get_tree().process_frame
+		deal = solvable_deal_pool.take_seed()
+	if not is_inside_tree():
+		return
+
 	auto_finish_running = false
 	win_animation.stop()
 	win_animation_started = false
-	game_service.new_game()
+	game_service.new_game_from_seed(deal.seed)
+	print("Seed: %d (Schwierigkeit: %s, Nodes: %d)" % [deal.seed, deal.difficulty, deal.nodes])
 	clear_selection()
 	refresh_board()
 	game_music.stop()
 	game_music.play()
+	new_game_pending = false
+	button_ui.set_new_game_available(true)
 
 
 func refresh_board(animate_moved_cards: bool = false) -> void:

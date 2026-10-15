@@ -23,6 +23,15 @@ func new_game() -> void:
 	undo_stack.clear()
 
 
+func new_game_from_seed(deal_seed: int) -> void:
+	state.score = 0
+	state.clear_piles()
+	var deck := SolvableDealGenerator.deck_from_seed(deal_seed)
+	_deal_tableau(deck)
+	_fill_stock(deck)
+	undo_stack.clear()
+
+
 func try_move(source: CardPile, start_index: int, target: CardPile) -> int:
 	if not KlondikeRules.can_move(source, start_index, target):
 		return 0
