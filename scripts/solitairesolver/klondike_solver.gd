@@ -39,14 +39,22 @@ func _init(p_node_budget: int = 200000, p_max_redeals: int = -1) -> void:
 func is_solvable_from_state(state: Dictionary) -> bool:
 	_visited = { }
 	_nodes = 0
+	# Iterative Depth-First Search (DFS): Der explizite LIFO-Stack ersetzt
+	# Rekursion und verhindert einen Überlauf des Aufrufstapels.
 	var stack: Array = [state]
 	while not stack.is_empty():
 		var s: Dictionary = stack.pop_back()
 		_nodes += 1
+		# Begrenzte Suche: Das Node-Budget hält die Laufzeit kontrollierbar.
+		# Ein Abbruch ist kein Unlösbarkeitsbeweis; der Generator verwirft den
+		# Kandidaten lediglich und prüft den nächsten Seed.
 		if _nodes > node_budget:
 			return false
 		if _is_won(s):
 			return true
+		# Transposition Table / Zustands-Cache: Aus verschiedenen Zugfolgen
+		# erreichbare identische Zustände werden nur einmal expandiert. Dadurch
+		# wird aus der Baum-Tiefensuche eine Graph-Tiefensuche ohne Zyklen.
 		var key := _state_key(s)
 		if _visited.has(key):
 			continue
@@ -72,6 +80,8 @@ func _is_red(id: int) -> bool:
 
 
 func _state_key(state: Dictionary) -> String:
+	# Kanonischer Schlüssel für die Transposition Table. Nur spielrelevante
+	# Zustandsdaten fließen ein; die bisherige Zugfolge ist unerheblich.
 	var chunks: Array = [str(state.foundation), str(state.stock), str(state.waste), str(state.tableau_hidden)]
 	for pile in state.tableau:
 		chunks.append(str(pile))
@@ -114,6 +124,8 @@ func _reveal_new_tableau_top(state: Dictionary, pile_index: int) -> void:
 
 
 func _generate_moves(state: Dictionary) -> Array:
+	# Zustandsraum-Expansion: Für jeden legalen Zug wird ein unabhängiger
+	# Nachfolgezustand erzeugt, den die DFS später untersucht.
 	var moves: Array = []
 
 	# 1. Tableau-Top -> Foundation

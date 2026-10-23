@@ -32,6 +32,8 @@ static func _seeded_shuffle_order(seed_value: int) -> Array:
 	var ids: Array = []
 	for i in range(52):
 		ids.append(i)
+	# Fisher-Yates-Shuffle: Jede Kartenpermutation ist gleich wahrscheinlich.
+	# Durch den gesetzten Seed ist das Ergebnis trotzdem reproduzierbar.
 	for i in range(ids.size() - 1, 0, -1):
 		var j := rng.randi_range(0, i)
 		var tmp = ids[i]
@@ -59,6 +61,9 @@ static func _deal_klondike_ids(order: Array) -> Dictionary:
 
 
 ## Sucht ab start_seed aufwärts den ersten Seed, dessen Deal lösbar ist.
+## Rejection Sampling (Generate-and-Test): Kandidaten werden deterministisch
+## erzeugt, vollständig vom Solver geprüft und bei fehlendem Lösungsbeweis
+## verworfen. Nur ein Seed mit gefundenem Gewinnpfad wird akzeptiert.
 ## Gibt {} zurück, wenn innerhalb von max_attempts keiner gefunden wurde.
 static func find_solvable_seed(start_seed: int, node_budget: int = 200000, max_attempts: int = 500, max_redeals: int = -1) -> Dictionary:
 	var s := start_seed
@@ -82,6 +87,7 @@ static func find_solvable_seed(start_seed: int, node_budget: int = 200000, max_a
 
 
 ## Grobe Schwierigkeits-Heuristik anhand des Suchaufwands des Solvers.
+## Die Anzahl besuchter Suchknoten dient dabei als Proxy-Metrik.
 ## Kein exaktes Maß für "menschliche" Schwierigkeit, nur ein brauchbarer Proxy.
 static func classify_difficulty(nodes_used: int) -> String:
 	if nodes_used < 500:
