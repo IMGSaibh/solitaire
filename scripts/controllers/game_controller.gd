@@ -6,6 +6,8 @@ var selected_source_pile: CardPile
 var selected_start_index := -1
 var win_animation_started := false
 var auto_finish_running := false
+var new_game_pending := false
+var solvable_deal_pool: SolvableDealPool
 
 @onready var stock_view: PileView = $Board/Stock
 @onready var waste_view: PileView = $Board/Waste
@@ -25,13 +27,28 @@ var auto_finish_running := false
 @onready var game_won_audio: AudioStreamPlayer = $GameWonAudio
 @onready var game_music: AudioStreamPlayer = $GameMusicAudio
 @onready var score_label: Label = $ScorePanel/ScoreLabel
-
+@onready var loading_screen: Control = $LoadingScreen
+@onready var loading_progress: ProgressBar = $LoadingScreen/CenterContainer/LoadingPanel/Content/LoadingProgress
 
 func _ready() -> void:
 	game_service = GameService.new()
 	game_state = game_service.state
+	solvable_deal_pool = SolvableDealPool.new()
 	_connect_signals_to_views()
+	_hide_gameplay()
 	new_game()
+
+
+func _process(delta: float) -> void:
+	if solvable_deal_pool != null:
+		solvable_deal_pool.update()
+	if loading_screen.visible and loading_progress.value < 95.0:
+		loading_progress.value = minf(95.0, loading_progress.value + delta * 12.0)
+
+
+func _exit_tree() -> void:
+	if solvable_deal_pool != null:
+		solvable_deal_pool.shutdown()
 
 
 func _connect_signals_to_views() -> void:
@@ -57,14 +74,61 @@ func _connect_signals_to_views() -> void:
 
 
 func new_game() -> void:
+	if new_game_pending:
+		return
+	new_game_pending = true
+	button_ui.set_new_game_available(false)
+	var deal := solvable_deal_pool.take_seed()
+	if deal.is_empty():
+		_show_loading_screen()
+	while deal.is_empty():
+		await get_tree().process_frame
+		deal = solvable_deal_pool.take_seed()
+	if not is_inside_tree():
+		return
+
 	auto_finish_running = false
 	win_animation.stop()
 	win_animation_started = false
-	game_service.new_game()
+	game_service.new_game_from_seed(deal.seed)
+	print("Seed: %d (Schwierigkeit: %s, Nodes: %d)" % [deal.seed, deal.difficulty, deal.nodes])
 	clear_selection()
 	refresh_board()
+	if loading_screen.visible:
+		loading_progress.value = 100.0
+		await get_tree().create_timer(0.15).timeout
+		if not is_inside_tree():
+			return
+	_hide_loading_screen()
+	_show_gameplay()
 	game_music.stop()
 	game_music.play()
+	new_game_pending = false
+	button_ui.set_new_game_available(true)
+
+
+func _show_loading_screen() -> void:
+	_hide_gameplay()
+	loading_progress.value = 0.0
+	loading_screen.show()
+
+
+func _hide_loading_screen() -> void:
+	loading_screen.hide()
+
+
+func _show_gameplay() -> void:
+	$Board.show()
+	$ScorePanel.show()
+	button_ui.show()
+	win_animation.show()
+
+
+func _hide_gameplay() -> void:
+	$Board.hide()
+	$ScorePanel.hide()
+	button_ui.hide()
+	win_animation.hide()
 
 
 func refresh_board(animate_moved_cards: bool = false) -> void:
