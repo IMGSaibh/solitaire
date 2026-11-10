@@ -1,21 +1,21 @@
-[gd_resource type="ShaderMaterial" format=3]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bwcgh3ofhuiwj"]
 
 [ext_resource type="Shader" uid="uid://wirrs015eyfx" path="res://shader/card_effects.gdshader" id="1_shader"]
 
 [resource]
 shader = ExtResource("1_shader")
 shader_parameter/shine_enabled = true
-shader_parameter/shine_line_smoothness = 0.045
+shader_parameter/shine_line_smoothness = 0.0450000021375
 shader_parameter/shine_line_width = 0.09
-shader_parameter/shine_brightness = 3.0
-shader_parameter/shine_rotation_degrees = 70.0000076
+shader_parameter/shine_brightness = 2.0
+shader_parameter/shine_rotation_degrees = 40.00000617500001
 shader_parameter/shine_distortion = 2.0
-shader_parameter/shine_speed = 0.3999999910592
-shader_parameter/shine_interval = 15.0
-shader_parameter/shine_position = 0.0
+shader_parameter/shine_speed = 0.30000000447036
+shader_parameter/shine_interval = 1.0
+shader_parameter/shine_position = 0.10000000475
 shader_parameter/shine_position_min = 0.25
 shader_parameter/shine_position_max = 0.5
-shader_parameter/shine_alpha = 1.0
+shader_parameter/shine_alpha = 0.30000001425
 shader_parameter/outline_color = Color(1, 0, 0, 1)
 shader_parameter/outline_enabled = false
 shader_parameter/outline_width = 6.0

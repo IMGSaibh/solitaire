@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bqtfgvpyd71a4" path="res://scripts/resources/solitaire_card_theme.gd" id="1_theme"]
 [ext_resource type="Texture2D" uid="uid://du52tipkmf8k6" path="res://assets/cards/backs/back.png" id="2_back"]
-[ext_resource type="ShaderMaterial" path="res://data/card_effects_material.tres" id="3_effects_material"]
+[ext_resource type="Material" path="res://data/card_effects_material.tres" id="3_effects_material"]
 
 [resource]
 script = ExtResource("1_theme")
