@@ -70,6 +70,20 @@ theme_override_styles/pressed = SubResource("StyleHover")
 theme_override_styles/hover = SubResource("StyleHover")
 text = "Neues Spiel"
 
+[node name="RestartGameButton" type="Button" parent="MarginContainer/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 60)
+layout_mode = 2
+tooltip_text = "Aktuelles Spiel von vorne beginnen"
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleNormal")
+theme_override_styles/pressed = SubResource("StyleHover")
+theme_override_styles/hover = SubResource("StyleHover")
+text = "Neu starten"
+
 [node name="AutoFinishButton" type="Button" parent="MarginContainer/Buttons" unique_id=564169350]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 60)

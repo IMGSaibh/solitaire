@@ -53,6 +53,7 @@ func _exit_tree() -> void:
 
 func _connect_signals_to_views() -> void:
 	button_ui.new_game_requested.connect(new_game)
+	button_ui.restart_game_requested.connect(_on_restart_game_requested)
 	button_ui.auto_finish_requested.connect(_on_auto_finish_requested)
 	button_ui.undo_requested.connect(_on_btn_undo)
 	button_ui.save_requested.connect(_on_btn_save_game)
@@ -165,7 +166,7 @@ func _on_auto_finish_requested() -> void:
 	clear_selection()
 	refresh_board()
 
-	while _auto_finish_next_card():
+	while auto_finish_running and _auto_finish_next_card():
 		await get_tree().create_timer(CardView.AUTO_MOVE_DURATION).timeout
 
 	auto_finish_running = false
@@ -302,6 +303,17 @@ func _on_btn_undo() -> void:
 		win_animation_started = false
 		clear_selection()
 		refresh_board()
+
+
+func _on_restart_game_requested() -> void:
+	auto_finish_running = false
+	if game_service.restart_game():
+		win_animation.stop()
+		win_animation_started = false
+		clear_selection()
+		refresh_board()
+		game_music.stop()
+		game_music.play()
 
 
 func _on_btn_save_game() -> Error:

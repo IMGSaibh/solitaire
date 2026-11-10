@@ -7,6 +7,7 @@ const TABLEAU_CARD_SCORE := 5
 
 var state: GameState
 var undo_stack: Array[Dictionary] = []
+var initial_snapshot: Dictionary = {}
 
 
 func _init() -> void:
@@ -21,6 +22,7 @@ func new_game() -> void:
 	_deal_tableau(deck)
 	_fill_stock(deck)
 	undo_stack.clear()
+	initial_snapshot = state.create_snapshot()
 
 
 func new_game_from_seed(deal_seed: int) -> void:
@@ -30,6 +32,14 @@ func new_game_from_seed(deal_seed: int) -> void:
 	_deal_tableau(deck)
 	_fill_stock(deck)
 	undo_stack.clear()
+	initial_snapshot = state.create_snapshot()
+
+
+func restart_game() -> bool:
+	if initial_snapshot.is_empty() or not state.restore_snapshot(initial_snapshot):
+		return false
+	undo_stack.clear()
+	return true
 
 
 func try_move(source: CardPile, start_index: int, target: CardPile) -> int:
@@ -150,6 +160,7 @@ func load_game_from_json(path: String = DEFAULT_SAVE_PATH) -> Error:
 	if not parsed is Dictionary or not state.restore_snapshot(parsed):
 		return ERR_PARSE_ERROR
 	undo_stack.clear()
+	initial_snapshot = state.create_snapshot()
 	return OK
 
 
