@@ -215,7 +215,7 @@ bus = &"SFX"
 
 [node name="GameMusicAudio" type="AudioStreamPlayer" parent="." unique_id=986822340]
 stream = ExtResource("6_se30j")
-volume_db = -17.474
+volume_db = -12.624
 max_polyphony = 4
 bus = &"Music"
 
@@ -236,7 +236,7 @@ mouse_filter = 2
 script = ExtResource("3_e3dby")
 card_scene = ExtResource("4_gsayk")
 
-[node name="LoadingScreen" type="Control" parent="."]
+[node name="LoadingScreen" type="Control" parent="." unique_id=902120182]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -244,9 +244,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Shade" type="ColorRect" parent="LoadingScreen"]
+[node name="Shade" type="ColorRect" parent="LoadingScreen" unique_id=27289204]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -256,7 +255,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.005, 0.025, 0.015, 0.78)
 
-[node name="CenterContainer" type="CenterContainer" parent="LoadingScreen"]
+[node name="CenterContainer" type="CenterContainer" parent="LoadingScreen" unique_id=2147209035]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -264,34 +263,34 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LoadingPanel" type="PanelContainer" parent="LoadingScreen/CenterContainer"]
+[node name="LoadingPanel" type="PanelContainer" parent="LoadingScreen/CenterContainer" unique_id=336363854]
 custom_minimum_size = Vector2(620, 330)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxLoadingPanel")
 
-[node name="Content" type="VBoxContainer" parent="LoadingScreen/CenterContainer/LoadingPanel"]
+[node name="Content" type="VBoxContainer" parent="LoadingScreen/CenterContainer/LoadingPanel" unique_id=1863291438]
 layout_mode = 2
 theme_override_constants/separation = 28
 alignment = 1
 
-[node name="Title" type="Label" parent="LoadingScreen/CenterContainer/LoadingPanel/Content"]
+[node name="Title" type="Label" parent="LoadingScreen/CenterContainer/LoadingPanel/Content" unique_id=208374183]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_font_sizes/font_size = 52
 text = "SOLITAIRE"
 horizontal_alignment = 1
 
-[node name="Status" type="Label" parent="LoadingScreen/CenterContainer/LoadingPanel/Content"]
+[node name="Status" type="Label" parent="LoadingScreen/CenterContainer/LoadingPanel/Content" unique_id=497174587]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.72, 0.3, 1)
 theme_override_font_sizes/font_size = 26
 text = "Spiel wird geladen …"
 horizontal_alignment = 1
 
-[node name="LoadingProgress" type="ProgressBar" parent="LoadingScreen/CenterContainer/LoadingPanel/Content"]
+[node name="LoadingProgress" type="ProgressBar" parent="LoadingScreen/CenterContainer/LoadingPanel/Content" unique_id=221246685]
 custom_minimum_size = Vector2(480, 18)
 layout_mode = 2
 mouse_filter = 2
-show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxLoadingBarBackground")
 theme_override_styles/fill = SubResource("StyleBoxLoadingBarFill")
+show_percentage = false

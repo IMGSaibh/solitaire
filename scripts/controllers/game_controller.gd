@@ -35,6 +35,7 @@ func _ready() -> void:
 	game_state = game_service.state
 	solvable_deal_pool = SolvableDealPool.new()
 	_connect_signals_to_views()
+	_sync_music_button()
 	_hide_gameplay()
 	new_game()
 
@@ -58,6 +59,7 @@ func _connect_signals_to_views() -> void:
 	button_ui.undo_requested.connect(_on_btn_undo)
 	button_ui.save_requested.connect(_on_btn_save_game)
 	button_ui.load_requested.connect(_on_btn_load_game)
+	button_ui.music_toggled.connect(_on_music_toggled)
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
@@ -67,11 +69,23 @@ func _connect_signals_to_views() -> void:
 		view.card_clicked.connect(_on_card_clicked)
 		view.card_released.connect(_on_card_released)
 		view.cards_dropped.connect(_on_cards_dropped)
-
 	for view in foundation_views:
 		view.card_clicked.connect(_on_card_clicked)
 		view.card_released.connect(_on_card_released)
 		view.cards_dropped.connect(_on_cards_dropped)
+
+
+func _sync_music_button() -> void:
+	var music_bus_index := AudioServer.get_bus_index(&"Music")
+	if music_bus_index >= 0:
+		var music_enabled := not AudioServer.is_bus_mute(music_bus_index)
+		button_ui.set_music_enabled(music_enabled)
+
+
+func _on_music_toggled(enabled: bool) -> void:
+	var music_bus_index := AudioServer.get_bus_index(&"Music")
+	if music_bus_index >= 0:
+		AudioServer.set_bus_mute(music_bus_index, not enabled)
 
 
 func new_game() -> void:
