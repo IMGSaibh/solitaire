@@ -26,7 +26,6 @@ var solvable_deal_pool: SolvableDealPool
 @onready var move_card_audio: AudioStreamPlayer = $MoveCardAudio
 @onready var game_won_audio: AudioStreamPlayer = $GameWonAudio
 @onready var game_music: AudioStreamPlayer = $GameMusicAudio
-@onready var score_label: Label = $ScorePanel/ScoreLabel
 @onready var loading_screen: Control = $LoadingScreen
 @onready var loading_progress: ProgressBar = $LoadingScreen/CenterContainer/LoadingPanel/Content/LoadingProgress
 
@@ -134,20 +133,18 @@ func _hide_loading_screen() -> void:
 
 func _show_gameplay() -> void:
 	$Board.show()
-	$ScorePanel.show()
 	button_ui.show()
 	win_animation.show()
 
 
 func _hide_gameplay() -> void:
 	$Board.hide()
-	$ScorePanel.hide()
 	button_ui.hide()
 	win_animation.hide()
 
 
 func refresh_board(animate_moved_cards: bool = false) -> void:
-	score_label.text = "Punkte: %d" % game_state.score
+	button_ui.set_score(game_state.score)
 	var reusable_sw_card_views: Dictionary = { }
 	var stock_waste_pile_views: Array[PileView] = [stock_view, waste_view]
 	stock_waste_pile_views.append_array(foundation_views)

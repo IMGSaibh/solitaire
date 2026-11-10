@@ -27,18 +27,6 @@ func _ready() -> void:
 	# _layout_board.call_deferred()
 "
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_83gi5"]
-bg_color = Color(0.02745098, 0.25490198, 0.13725491, 0.9607843)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.85882354, 0.72156864, 0.3019608, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxLoadingPanel"]
 bg_color = Color(0.015, 0.09, 0.055, 0.96)
 border_width_left = 3
@@ -186,23 +174,6 @@ offset_left = 1260.0
 offset_top = 100.0
 offset_right = 1410.0
 offset_bottom = 310.0
-
-[node name="ScorePanel" type="PanelContainer" parent="." unique_id=358567590]
-layout_mode = 0
-offset_left = 100.0
-offset_top = 20.0
-offset_right = 310.0
-offset_bottom = 78.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_83gi5")
-
-[node name="ScoreLabel" type="Label" parent="ScorePanel" unique_id=1271985552]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
-theme_override_font_sizes/font_size = 28
-text = "Punkte: 0"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="ButtonUi" parent="." unique_id=858763640 instance=ExtResource("6_button_ui")]
 layout_mode = 1

@@ -36,6 +36,24 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_button_ui")
 
+[node name="ScorePanel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 20.0
+offset_right = 310.0
+offset_bottom = 78.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleNormal")
+
+[node name="ScoreLabel" type="Label" parent="ScorePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_font_sizes/font_size = 28
+text = "Punkte: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=227055820]
 layout_mode = 1
 anchors_preset = 12

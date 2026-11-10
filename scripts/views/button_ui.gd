@@ -12,6 +12,7 @@ signal music_toggled(enabled: bool)
 @onready var auto_finish_button: Button = %AutoFinishButton
 @onready var new_game_button: Button = %NewGameButton
 @onready var music_button: Button = %MusicButton
+@onready var score_label: Label = %ScoreLabel
 
 
 func _ready() -> void:
@@ -31,6 +32,10 @@ func set_auto_finish_available(available: bool) -> void:
 
 func set_new_game_available(available: bool) -> void:
 	new_game_button.disabled = not available
+
+
+func set_score(score: int) -> void:
+	score_label.text = "Punkte: %d" % score
 
 
 func set_music_enabled(enabled: bool) -> void:
