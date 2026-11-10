@@ -36,7 +36,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_button_ui")
 
-[node name="ScorePanel" type="PanelContainer" parent="."]
+[node name="ScorePanel" type="PanelContainer" parent="." unique_id=9895350]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 20.0
@@ -45,7 +45,7 @@ offset_bottom = 78.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleNormal")
 
-[node name="ScoreLabel" type="Label" parent="ScorePanel"]
+[node name="ScoreLabel" type="Label" parent="ScorePanel" unique_id=424181061]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
@@ -96,7 +96,7 @@ theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
 theme_override_styles/hover = SubResource("StyleHover")
-text = "Rest Deal"
+text = "Reset Deal"
 
 [node name="AutoFinishButton" type="Button" parent="MarginContainer/Buttons" unique_id=564169350]
 unique_name_in_owner = true
@@ -154,18 +154,17 @@ theme_override_styles/pressed = SubResource("StyleHover")
 theme_override_styles/hover = SubResource("StyleHover")
 text = "Laden"
 
-[node name="MusicButton" type="Button" parent="MarginContainer/Buttons"]
+[node name="MusicButton" type="Button" parent="MarginContainer/Buttons" unique_id=37417710]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 60)
 layout_mode = 2
 tooltip_text = "Musik einschalten"
 mouse_default_cursor_shape = 2
-toggle_mode = true
-button_pressed = false
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
 theme_override_styles/hover = SubResource("StyleHover")
+toggle_mode = true
 text = "Musik: Aus"
