@@ -1,25 +1,35 @@
 [gd_scene format=3 uid="uid://dmwsgvyndrwci"]
 
 [ext_resource type="Script" uid="uid://dkfwp7m8qsp6b" path="res://scripts/views/button_ui.gd" id="1_button_ui"]
+[ext_resource type="FontFile" uid="uid://ciir800ihsrkw" path="res://assets/fonts/RobotoSlab-VariableFont_wght.ttf" id="2_f3guo"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f3guo"]
+bg_color = Color(0.027, 0.255, 0.137, 0.96)
+border_width_bottom = 4
+border_color = Color(0.115812846, 0.115812846, 0.11581283, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleNormal"]
 bg_color = Color(0.027, 0.255, 0.137, 0.96)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.86, 0.72, 0.3, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.65882355, 0.5411765, 0.28235295, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleHover"]
-bg_color = Color(0.04, 0.36, 0.19, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+bg_color = Color(0.02745098, 0.25490198, 0.13725491, 0.9607843)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 border_color = Color(1, 0.85, 0.4, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -38,17 +48,18 @@ script = ExtResource("1_button_ui")
 
 [node name="ScorePanel" type="PanelContainer" parent="." unique_id=9895350]
 layout_mode = 0
-offset_left = 100.0
+offset_left = 1689.0
 offset_top = 20.0
-offset_right = 310.0
+offset_right = 1899.0
 offset_bottom = 78.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleNormal")
+theme_override_styles/panel = SubResource("StyleBoxFlat_f3guo")
 
 [node name="ScoreLabel" type="Label" parent="ScorePanel" unique_id=424181061]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 28
 text = "Punkte: 0"
 horizontal_alignment = 1
@@ -58,11 +69,12 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
+offset_left = 20.0
+offset_right = -554.0
 offset_bottom = 92.0
 grow_horizontal = 2
-theme_override_constants/margin_left = 340
 theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 28
+theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 12
 
 [node name="Buttons" type="HBoxContainer" parent="MarginContainer" unique_id=288903392]
@@ -78,6 +90,7 @@ tooltip_text = "Neues Spiel"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
@@ -92,6 +105,7 @@ tooltip_text = "Aktuelles Spiel von vorne beginnen"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
@@ -106,6 +120,7 @@ tooltip_text = "Alle Karten automatisch ablegen"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
@@ -120,6 +135,7 @@ tooltip_text = "Letzten Zug rückgängig machen"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
@@ -134,6 +150,7 @@ tooltip_text = "Spiel speichern"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
@@ -148,6 +165,7 @@ tooltip_text = "Spiel laden"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
@@ -162,6 +180,7 @@ tooltip_text = "Musik einschalten"
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_f3guo")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleNormal")
 theme_override_styles/pressed = SubResource("StyleHover")
