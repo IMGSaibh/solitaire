@@ -128,16 +128,16 @@ script = SubResource("GDScript_0rn35")
 
 [node name="Stock" parent="Board" unique_id=865190981 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
-offset_left = 100.0
+offset_left = 134.0
 offset_top = 330.0
-offset_right = 250.0
+offset_right = 284.0
 offset_bottom = 540.0
 
 [node name="Waste" parent="Board" unique_id=251156000 instance=ExtResource("2_ma5rq")]
 layout_mode = 0
-offset_left = 100.0
+offset_left = 134.0
 offset_top = 100.0
-offset_right = 250.0
+offset_right = 284.0
 offset_bottom = 310.0
 
 [node name="Foundation1" parent="Board" unique_id=1073673478 instance=ExtResource("2_ma5rq")]
