@@ -97,6 +97,24 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxSaveMessage"]
+content_margin_left = 32.0
+content_margin_top = 18.0
+content_margin_right = 32.0
+content_margin_bottom = 18.0
+bg_color = Color(0.015, 0.09, 0.055, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.858824, 0.721569, 0.301961, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 10
+
 [node name="Game" type="Control" unique_id=1867119681]
 layout_mode = 3
 anchors_preset = 15
@@ -371,3 +389,29 @@ mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxLoadingBarBackground")
 theme_override_styles/fill = SubResource("StyleBoxLoadingBarFill")
 show_percentage = false
+
+[node name="SaveMessage" type="CenterContainer" parent="." unique_id=1420605693]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="SaveMessage" unique_id=135304574]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxSaveMessage")
+
+[node name="Label" type="Label" parent="SaveMessage/Panel" unique_id=427803808]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_font_sizes/font_size = 28
+text = "Spiel wurde gespeichert"
+horizontal_alignment = 1
+
+[node name="SaveMessageTimer" type="Timer" parent="." unique_id=1701926297]
+wait_time = 2.0
+one_shot = true

@@ -31,6 +31,9 @@ var solvable_deal_pool: SolvableDealPool
 @onready var loading_progress: ProgressBar = $LoadingScreen/CenterContainer/LoadingPanel/Content/LoadingProgress
 @onready var auto_finish_prompt: Control = $AutoFinishPrompt
 @onready var auto_finish_button: Button = $AutoFinishPrompt/CenterContainer/PromptPanel/Content/AutoFinishButton
+@onready var save_message: CenterContainer = $SaveMessage
+@onready var save_message_label: Label = $SaveMessage/Panel/Label
+@onready var save_message_timer: Timer = $SaveMessageTimer
 
 func _ready() -> void:
 	game_service = GameService.new()
@@ -62,6 +65,7 @@ func _connect_signals_to_views() -> void:
 	button_ui.save_requested.connect(_on_btn_save_game)
 	button_ui.load_requested.connect(_on_btn_load_game)
 	button_ui.music_toggled.connect(_on_music_toggled)
+	save_message_timer.timeout.connect(save_message.hide)
 	stock_view.pile_clicked.connect(_on_stock_clicked)
 	stock_view.card_clicked.connect(_on_card_clicked)
 	waste_view.pile_clicked.connect(_on_waste_clicked)
@@ -352,8 +356,18 @@ func _on_restart_game_requested() -> void:
 
 
 func _on_btn_save_game() -> Error:
-	return game_service.save_game_to_json()
-	# TODO: Show a message to the user that the game was saved successfully or if there was an error.
+	var error := game_service.save_game_to_json()
+	if error == OK:
+		_show_save_message("Spiel wurde gespeichert")
+	else:
+		_show_save_message("Spiel konnte nicht gespeichert werden")
+	return error
+
+
+func _show_save_message(message: String) -> void:
+	save_message_label.text = message
+	save_message.show()
+	save_message_timer.start()
 
 
 func _on_btn_load_game() -> Error:
