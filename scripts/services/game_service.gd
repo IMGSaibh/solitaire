@@ -2,6 +2,7 @@ class_name GameService
 extends RefCounted
 
 const DEFAULT_SAVE_PATH := "user://savegame.json"
+const SAVE_FORMAT_VERSION := 2
 const FOUNDATION_CARD_SCORE := 10
 const TABLEAU_CARD_SCORE := 5
 
@@ -146,7 +147,12 @@ func save_game_to_json(path: String = DEFAULT_SAVE_PATH) -> Error:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		return ERR_CANT_OPEN
-	file.store_string(JSON.stringify(state.create_snapshot(), "\t"))
+	var save_data := {
+		"version": SAVE_FORMAT_VERSION,
+		"current_state": state.create_snapshot(),
+		"initial_state": initial_snapshot,
+	}
+	file.store_string(JSON.stringify(save_data, "\t"))
 	return OK
 
 
@@ -157,10 +163,28 @@ func load_game_from_json(path: String = DEFAULT_SAVE_PATH) -> Error:
 	if file == null:
 		return ERR_CANT_OPEN
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
-	if not parsed is Dictionary or not state.restore_snapshot(parsed):
+	if not parsed is Dictionary:
+		return ERR_PARSE_ERROR
+
+	var current_snapshot: Variant
+	var saved_initial_snapshot: Variant
+	if parsed.has("current_state"):
+		current_snapshot = parsed.get("current_state")
+		saved_initial_snapshot = parsed.get("initial_state")
+	else:
+		# Save files from before version 2 only contain the current position.
+		current_snapshot = parsed
+		saved_initial_snapshot = parsed
+
+	if not current_snapshot is Dictionary or not saved_initial_snapshot is Dictionary:
+		return ERR_PARSE_ERROR
+	var initial_state_validator := GameState.new()
+	if not initial_state_validator.restore_snapshot(saved_initial_snapshot):
+		return ERR_PARSE_ERROR
+	if not state.restore_snapshot(current_snapshot):
 		return ERR_PARSE_ERROR
 	undo_stack.clear()
-	initial_snapshot = state.create_snapshot()
+	initial_snapshot = saved_initial_snapshot.duplicate(true)
 	return OK
 
 
