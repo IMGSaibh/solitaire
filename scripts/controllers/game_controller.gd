@@ -6,6 +6,7 @@ var selected_source_pile: CardPile
 var selected_start_index := -1
 var win_animation_started := false
 var auto_finish_running := false
+var auto_finish_prompt_dismissed := false
 var new_game_pending := false
 var solvable_deal_pool: SolvableDealPool
 
@@ -28,6 +29,8 @@ var solvable_deal_pool: SolvableDealPool
 @onready var game_music: AudioStreamPlayer = $GameMusicAudio
 @onready var loading_screen: Control = $LoadingScreen
 @onready var loading_progress: ProgressBar = $LoadingScreen/CenterContainer/LoadingPanel/Content/LoadingProgress
+@onready var auto_finish_prompt: Control = $AutoFinishPrompt
+@onready var auto_finish_button: Button = $AutoFinishPrompt/CenterContainer/PromptPanel/Content/AutoFinishButton
 
 func _ready() -> void:
 	game_service = GameService.new()
@@ -54,7 +57,7 @@ func _exit_tree() -> void:
 func _connect_signals_to_views() -> void:
 	button_ui.new_game_requested.connect(new_game)
 	button_ui.restart_game_requested.connect(_on_restart_game_requested)
-	button_ui.auto_finish_requested.connect(_on_auto_finish_requested)
+	auto_finish_button.pressed.connect(_on_auto_finish_requested)
 	button_ui.undo_requested.connect(_on_btn_undo)
 	button_ui.save_requested.connect(_on_btn_save_game)
 	button_ui.load_requested.connect(_on_btn_load_game)
@@ -102,6 +105,8 @@ func new_game() -> void:
 		return
 
 	auto_finish_running = false
+	auto_finish_prompt_dismissed = false
+	_hide_auto_finish_prompt()
 	win_animation.stop()
 	win_animation_started = false
 	game_service.new_game_from_seed(deal.seed)
@@ -141,6 +146,7 @@ func _hide_gameplay() -> void:
 	$Board.hide()
 	button_ui.hide()
 	win_animation.hide()
+	_hide_auto_finish_prompt()
 
 
 func refresh_board(animate_moved_cards: bool = false) -> void:
@@ -167,12 +173,29 @@ func refresh_board(animate_moved_cards: bool = false) -> void:
 		if is_instance_valid(unused_view):
 			unused_view.queue_free()
 
-	button_ui.set_auto_finish_available(game_service.can_auto_finish() and not game_state.is_game_won() and not auto_finish_running)
+	_update_auto_finish_prompt()
+
+
+func _update_auto_finish_prompt() -> void:
+	var available := game_service.can_auto_finish() and not game_state.is_game_won() and not auto_finish_running
+	if available and not auto_finish_prompt_dismissed:
+		auto_finish_button.disabled = false
+		auto_finish_prompt.show()
+		auto_finish_button.grab_focus()
+	else:
+		_hide_auto_finish_prompt()
+
+
+func _hide_auto_finish_prompt() -> void:
+	auto_finish_prompt.hide()
+	auto_finish_button.disabled = true
 
 
 func _on_auto_finish_requested() -> void:
 	if auto_finish_running or not game_service.can_auto_finish():
 		return
+	auto_finish_prompt_dismissed = true
+	_hide_auto_finish_prompt()
 	auto_finish_running = true
 	clear_selection()
 	refresh_board()
@@ -318,6 +341,7 @@ func _on_btn_undo() -> void:
 
 func _on_restart_game_requested() -> void:
 	auto_finish_running = false
+	auto_finish_prompt_dismissed = false
 	if game_service.restart_game():
 		win_animation.stop()
 		win_animation_started = false
@@ -334,6 +358,7 @@ func _on_btn_save_game() -> Error:
 
 func _on_btn_load_game() -> Error:
 	auto_finish_running = false
+	auto_finish_prompt_dismissed = false
 	var error := game_service.load_game_from_json()
 	if error == OK:
 		win_animation.stop()

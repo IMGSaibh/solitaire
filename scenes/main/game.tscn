@@ -27,6 +27,48 @@ func _ready() -> void:
 	# _layout_board.call_deferred()
 "
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxAutoFinishPanel"]
+content_margin_left = 48.0
+content_margin_top = 36.0
+content_margin_right = 48.0
+content_margin_bottom = 36.0
+bg_color = Color(0.015, 0.09, 0.055, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.858824, 0.721569, 0.301961, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxAutoFinishButton"]
+bg_color = Color(0.027, 0.255, 0.137, 0.96)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.858824, 0.721569, 0.301961, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxAutoFinishButtonHover"]
+bg_color = Color(0.04, 0.34, 0.18, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.85, 0.4, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxLoadingPanel"]
 bg_color = Color(0.015, 0.09, 0.055, 0.96)
 border_width_left = 3
@@ -206,6 +248,68 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_e3dby")
 card_scene = ExtResource("4_gsayk")
+
+[node name="AutoFinishPrompt" type="Control" parent="." unique_id=988752571]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Shade" type="ColorRect" parent="AutoFinishPrompt" unique_id=1146275179]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.005, 0.025, 0.015, 0.62)
+
+[node name="CenterContainer" type="CenterContainer" parent="AutoFinishPrompt" unique_id=1739017904]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PromptPanel" type="PanelContainer" parent="AutoFinishPrompt/CenterContainer" unique_id=486176833]
+custom_minimum_size = Vector2(620, 330)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxAutoFinishPanel")
+
+[node name="Content" type="VBoxContainer" parent="AutoFinishPrompt/CenterContainer/PromptPanel" unique_id=2055725575]
+layout_mode = 2
+theme_override_constants/separation = 28
+alignment = 1
+
+[node name="Title" type="Label" parent="AutoFinishPrompt/CenterContainer/PromptPanel/Content" unique_id=814187813]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_font_sizes/font_size = 44
+text = "Alle Karten sind aufgedeckt"
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="AutoFinishPrompt/CenterContainer/PromptPanel/Content" unique_id=1703253350]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.72, 0.3, 1)
+theme_override_font_sizes/font_size = 24
+text = "Die restlichen Karten können automatisch abgelegt werden."
+horizontal_alignment = 1
+
+[node name="AutoFinishButton" type="Button" parent="AutoFinishPrompt/CenterContainer/PromptPanel/Content" unique_id=1124073430]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.84, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxAutoFinishButton")
+theme_override_styles/pressed = SubResource("StyleBoxAutoFinishButtonHover")
+theme_override_styles/hover = SubResource("StyleBoxAutoFinishButtonHover")
+text = "Aufräumen"
 
 [node name="LoadingScreen" type="Control" parent="." unique_id=902120182]
 visible = false
